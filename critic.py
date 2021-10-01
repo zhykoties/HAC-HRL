@@ -39,6 +39,17 @@ class Critic(nn.Module):
         self.q_init = -0.067
         self.q_offset = -math.log(self.q_limit / self.q_init - 1)
 
+        def init_weights(m):
+            if isinstance(m, nn.Linear):
+                num_prev_neurons = int(m.weight.shape[1])
+                fan_in_init = 1 / num_prev_neurons ** 0.5
+                torch.nn.init.uniform_(m.weight, -fan_in_init, fan_in_init)
+                torch.nn.init.uniform_(m.bias, -fan_in_init, fan_in_init)
+
+        self.apply(init_weights)
+        torch.nn.init.uniform_(self.output.weight, -3e-3, 3e-3)
+        torch.nn.init.uniform_(self.output, -3e-3, 3e-3)
+
     def forward(self, state, goal, action):
         h1 = self.relu1(self.linear1(torch.cat([state, goal, action], 1)))
         h2 = self.relu2(self.linear2(h1))
