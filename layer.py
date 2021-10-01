@@ -127,15 +127,19 @@ class Layer:
         if agent.FLAGS.test or subgoal_test:
             state_pt = torch.tensor(self.current_state, dtype=torch.float32, device=self.device).unsqueeze(0)
             goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
+            print('goal: ', goal_pt.shape)
+            print('state: ', state_pt.shape)
             return self.actor(state_pt, goal_pt).data.cpu().numpy(), "Policy", subgoal_test
 
         else:
 
             if np.random.random_sample() > 0.2:
+                state_pt = torch.tensor(self.current_state, dtype=torch.float32, device=self.device).unsqueeze(0)
+                goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
+                print('goal: ', goal_pt.shape)
+                print('state: ', state_pt.shape)
                 # Choose noisy action
-                action = self.add_noise(
-                    self.actor(np.reshape(self.current_state, (1, len(self.current_state))),
-                               np.reshape(self.goal, (1, len(self.goal))))[0], env)
+                action = self.add_noise(self.actor(state_pt, goal_pt).data.cpu().numpy(), env)
 
                 action_type = "Noisy Policy"
 
@@ -465,8 +469,8 @@ class Layer:
                     map(lambda x: torch.tensor(x, device=self.device), batch)
 
                 # Get the actions and the state values to compute the targets
-                new_actions = self.actor_target(new_states)
-                wanted_qs = self.critic_target(new_states, new_actions.detach())
+                new_actions = self.actor_target(new_states, goals)
+                wanted_qs = self.critic_target(new_states, goals, new_actions.detach())
 
                 # Compute the target
                 rewards = rewards.unsqueeze(1)
@@ -476,14 +480,14 @@ class Layer:
 
                 # Update the critic network
                 self.critic_optimizer.zero_grad()
-                state_action_batch = self.critic(old_states, actions)
+                state_action_batch = self.critic(old_states, goals, actions)
                 value_loss = F.mse_loss(state_action_batch, expected_values.detach())
                 value_loss.backward()
                 self.critic_optimizer.step()
 
                 # Update the actor network
                 self.actor_optimizer.zero_grad()
-                policy_loss = torch.mean(-self.critic(old_states, self.actor(old_states)))
+                policy_loss = torch.mean(-self.critic(old_states, goals, self.actor(old_states, goals)))
                 policy_loss.backward()
                 self.actor_optimizer.step()
 
