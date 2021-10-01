@@ -1,6 +1,7 @@
 """
 "run_HAC.py" executes the training schedule for the agent.  By default, the agent will alternate between exploration and testing phases.  The number of episodes in the exploration phase can be configured in section 3 of "design_agent_and_env.py" file.  If the user prefers to only explore or only test, the user can enter the command-line options ""--train_only" or "--test", respectively.  The full list of command-line options is available in the "options.py" file.
 """
+import logging
 import os
 import utils
 from tqdm import trange
@@ -9,6 +10,8 @@ NUM_BATCH = 1000
 TEST_FREQ = 2
 
 num_test_episodes = 100
+
+logger = logging.getLogger(f'HAC.run_HAC')
 
 
 def run_HAC(FLAGS, env, agent):
@@ -25,8 +28,10 @@ def run_HAC(FLAGS, env, agent):
         os.makedirs(model_dir)
     # If not retraining, restore weights
     # if we are not retraining from scratch, just restore weights
+    print('FLAGS.restore_file: ', FLAGS.restore_file)
     if FLAGS.restore_file is not None:
         start_batch = utils.load_checkpoint(agent, model_dir, FLAGS.restore_file)
+        print('start_batch: ', start_batch)
     else:
         start_batch = 0
 
