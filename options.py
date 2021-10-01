@@ -30,6 +30,10 @@ def parse_options():
                         default='UR5',
                         help='Name of the environment')
 
+    parser.add_argument('--model',
+                        default='LAY_3',
+                        help='Model settings')
+
     parser.add_argument('--retrain',
                         action='store_true',
                         help='Include to reset policy')
