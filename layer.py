@@ -489,15 +489,7 @@ class Layer:
                 self.actor_optimizer.step()
 
                 # Update the target networks
-                print('before: ')
-                for i, param in enumerate(self.actor_target.parameters()):
-                    if i == 0:
-                        print(param.data[0])
-                print('after: ')
                 self.actor_target.update_target_weights(self.actor)
-                for i, param in enumerate(self.actor_target.parameters()):
-                    if i == 0:
-                        print(param.data[0])
                 self.critic_target.update_target_weights(self.critic)
 
                 return value_loss.item(), policy_loss.item()

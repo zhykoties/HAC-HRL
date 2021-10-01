@@ -43,7 +43,7 @@ def run_HAC(FLAGS, env, agent):
             # Reset successful episode counter
             successful_episodes = 0
 
-        for episode in range(num_episodes):
+        for episode in trange(num_episodes):
 
             # print(f'\nBatch {batch}, Episode {episode}')
 
@@ -57,8 +57,6 @@ def run_HAC(FLAGS, env, agent):
                 if mix_train_test and batch % TEST_FREQ == 0:
                     successful_episodes += 1
 
-        print('mix_train_test: ', mix_train_test)
-        print('boolean: ', (batch + 1) % TEST_FREQ)
         # Finish evaluating policy if tested prior batch
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:
             # Log performance
