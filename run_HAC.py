@@ -35,7 +35,7 @@ def run_HAC(FLAGS, env, agent):
     else:
         start_batch = 0
 
-    for batch in tqdm(range(start_batch, NUM_BATCH), initial=start_batch):
+    for batch in trange(start_batch, NUM_BATCH):
 
         num_episodes = agent.other_params["num_exploration_episodes"]
 
