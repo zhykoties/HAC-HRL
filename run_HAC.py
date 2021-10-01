@@ -21,19 +21,19 @@ logger = logging.getLogger(f'HAC.run_HAC')
 def run_HAC(FLAGS, env, agent):
     # Print task summary
     utils.print_summary(FLAGS, env)
+    logger.info(FLAGS)
 
     # Determine training mode. If not testing and not solely training, interleave training and testing to track progress
     mix_train_test = False
     if not FLAGS.test and not FLAGS.train_only:
         mix_train_test = True
 
-    model_dir = os.getcwd() + '/models'
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
+    if not os.path.exists(FLAGS.model_dir):
+        os.makedirs(FLAGS.model_dir)
     # If not retraining, restore weights
     # if we are not retraining from scratch, just restore weights
     if FLAGS.restore_file is not None:
-        start_batch = utils.load_checkpoint(agent, model_dir, FLAGS.restore_file)
+        start_batch = utils.load_checkpoint(agent, FLAGS.model_dir, FLAGS.restore_file)
     else:
         start_batch = 0
 
@@ -70,7 +70,7 @@ def run_HAC(FLAGS, env, agent):
             success_rate = successful_episodes / num_test_episodes * 100
             print("\nTesting Success Rate %.2f%%" % success_rate)
             agent.log_performance(success_rate)
-            utils.save_checkpoint(agent, batch, success_rate, model_dir)
+            utils.save_checkpoint(agent, batch, success_rate, FLAGS.model_dir)
             agent.FLAGS.test = False
 
             print("\n--- END TESTING ---\n")

@@ -16,12 +16,11 @@ designer = importlib.import_module(f'experiments.{FLAGS.env}.design_agent_and_en
 model_json_path = os.path.join('experiments', FLAGS.env, FLAGS.model, 'params.json')
 assert os.path.isfile(model_json_path), f'No model json config file found at {model_json_path}'
 params = utils.Params(model_json_path)
-print('params: ', params)
 params.update(params=FLAGS)
+params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model)
 
 # Instantiate the agent and Mujoco environment. The designer must assign values to the hyperparameters listed in the
 # "design_agent_and_env.py" file.
-print('FLAGS: ', params)
 agent, env = designer.design_agent_and_env(params)
 
 # Begin training
