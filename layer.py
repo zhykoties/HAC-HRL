@@ -127,8 +127,6 @@ class Layer:
         if agent.FLAGS.test or subgoal_test:
             state_pt = torch.tensor(self.current_state, dtype=torch.float32, device=self.device).unsqueeze(0)
             goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
-            print('goal: ', goal_pt.shape)
-            print('state: ', state_pt.shape)
             return self.actor(state_pt, goal_pt).data.cpu().numpy()[0], "Policy", subgoal_test
 
         else:
@@ -136,8 +134,6 @@ class Layer:
             if np.random.random_sample() > 0.2:
                 state_pt = torch.tensor(self.current_state, dtype=torch.float32, device=self.device).unsqueeze(0)
                 goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
-                print('goal: ', goal_pt.shape)
-                print('state: ', state_pt.shape)
                 # Choose noisy action
                 action = self.add_noise(self.actor(state_pt, goal_pt).data.cpu().numpy()[0], env)
 
