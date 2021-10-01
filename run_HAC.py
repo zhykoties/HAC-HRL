@@ -1,10 +1,10 @@
 """
 "run_HAC.py" executes the training schedule for the agent.  By default, the agent will alternate between exploration and testing phases.  The number of episodes in the exploration phase can be configured in section 3 of "design_agent_and_env.py" file.  If the user prefers to only explore or only test, the user can enter the command-line options ""--train_only" or "--test", respectively.  The full list of command-line options is available in the "options.py" file.
 """
-
+import os
 import pickle as cpickle
 import agent as Agent
-from utils import print_summary
+import utils
 
 NUM_BATCH = 1000
 TEST_FREQ = 2
@@ -14,14 +14,24 @@ num_test_episodes = 100
 
 def run_HAC(FLAGS, env, agent):
     # Print task summary
-    print_summary(FLAGS, env)
+    utils.print_summary(FLAGS, env)
 
-    # Determine training mode.  If not testing and not solely training, interleave training and testing to track progress
+    # Determine training mode. If not testing and not solely training, interleave training and testing to track progress
     mix_train_test = False
     if not FLAGS.test and not FLAGS.train_only:
         mix_train_test = True
 
-    for batch in range(NUM_BATCH):
+    model_dir = os.getcwd() + '/models'
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
+    # If not retraining, restore weights
+    # if we are not retraining from scratch, just restore weights
+    if not FLAGS.retrain:
+        start_batch = utils.load_checkpoint(agent, model_dir, 'last')
+    else:
+        start_batch = 0
+
+    for batch in range(start_batch, NUM_BATCH):
 
         num_episodes = agent.other_params["num_exploration_episodes"]
 
@@ -56,7 +66,7 @@ def run_HAC(FLAGS, env, agent):
             success_rate = successful_episodes / num_test_episodes * 100
             print("\nTesting Success Rate %.2f%%" % success_rate)
             agent.log_performance(success_rate)
-            agent.save_model(batch, success_rate)
+            utils.save_checkpoint(agent, batch, success_rate, model_dir)
             agent.FLAGS.test = False
 
             print("\n--- END TESTING ---\n")

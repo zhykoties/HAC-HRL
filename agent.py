@@ -106,19 +106,6 @@ class Agent:
 
         return goal_status, max_lay_achieved
 
-    def initialize_networks(self):
-        self.model_dir = os.getcwd() + '/models'
-        if not os.path.exists(self.model_dir):
-            os.makedirs(self.model_dir)
-        # If not retraining, restore weights
-        # if we are not retraining from scratch, just restore weights
-        if not self.FLAGS.retrain:
-            start_batch = utils.load_checkpoint(self, self.model_dir, 'last')
-
-    # Save neural network parameters
-    def save_model(self, batch, success_rate):
-        utils.save_checkpoint(self, batch, success_rate, self.model_loc)
-
     # Update actor and critic networks for each layer
     def learn(self):
 
