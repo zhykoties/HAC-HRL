@@ -48,7 +48,7 @@ class Critic(nn.Module):
 
         self.apply(init_weights)
         torch.nn.init.uniform_(self.output.weight, -3e-3, 3e-3)
-        torch.nn.init.uniform_(self.output, -3e-3, 3e-3)
+        torch.nn.init.uniform_(self.output.bias, -3e-3, 3e-3)
 
     def forward(self, state, goal, action):
         h1 = self.relu1(self.linear1(torch.cat([state, goal, action], 1)))
