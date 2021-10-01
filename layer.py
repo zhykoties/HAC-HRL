@@ -128,8 +128,8 @@ class Layer:
 
             print('current)state: ', self.current_state.shape)
             assert len(self.current_state.shape) == 1
-            state_pt = torch.Tensor(self.current_state, device=self.device).unsqueeze(0)
-            goal_pt = torch.Tensor(self.goal, device=self.device).unsqueeze(0)
+            state_pt = torch.tensor(self.current_state, device=self.device).unsqueeze(0)
+            goal_pt = torch.tensor(self.goal, device=self.device).unsqueeze(0)
             return self.actor(state_pt, goal_pt).data.cpu().numpy(), "Policy", subgoal_test
 
         else:
@@ -465,7 +465,7 @@ class Layer:
             if self.replay_buffer.size >= self.batch_size:
                 batch = self.replay_buffer.get_batch()
                 old_states, actions, rewards, new_states, goals, is_terminals = \
-                    map(lambda x: torch.Tensor(x, device=self.device), batch)
+                    map(lambda x: torch.tensor(x, device=self.device), batch)
 
                 # Get the actions and the state values to compute the targets
                 new_actions = self.actor_target(new_states)
