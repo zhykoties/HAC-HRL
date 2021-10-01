@@ -15,7 +15,7 @@ utils.set_logger('train.log')
 designer = importlib.import_module(f'experiments.{FLAGS.env}.design_agent_and_env')
 model_json_path = os.path.join('experiments', FLAGS.env, FLAGS.model, 'params.json')
 assert os.path.isfile(model_json_path), f'No model json config file found at {model_json_path}'
-params = utils.Params()
+params = utils.Params(model_json_path)
 print('params: ', params)
 params.update(params=FLAGS)
 
