@@ -35,7 +35,7 @@ def run_HAC(FLAGS, env, agent):
         num_episodes = agent.other_params["num_exploration_episodes"]
 
         # Evaluate policy every TEST_FREQ batches if interleaving training and testing
-        if mix_train_test and batch % TEST_FREQ == 0:
+        if mix_train_test and (batch + 1) % TEST_FREQ == 0:
             print("\n--- TESTING ---")
             agent.FLAGS.test = True
             num_episodes = num_test_episodes
