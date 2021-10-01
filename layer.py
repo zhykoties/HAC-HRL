@@ -462,7 +462,7 @@ class Layer:
             if self.replay_buffer.size >= self.batch_size:
                 batch = self.replay_buffer.get_batch()
                 old_states, actions, rewards, new_states, goals, is_terminals = \
-                    map(lambda x: torch.tensor(x, device=self.device), batch)
+                    map(lambda x: torch.tensor(x, dtype=torch.float32, device=self.device), batch)
 
                 # Get the actions and the state values to compute the targets
                 new_actions = self.actor_target(new_states, goals)
