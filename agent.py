@@ -54,7 +54,7 @@ class Agent:
     def check_goals(self, env):
 
         # goal_status is vector showing status of whether a layer's goal has been achieved
-        goal_status = [False for i in range(self.FLAGS.layers)]
+        goal_status = [False for _ in range(self.FLAGS.layers)]
 
         max_lay_achieved = None
 

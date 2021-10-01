@@ -2,9 +2,8 @@
 "run_HAC.py" executes the training schedule for the agent.  By default, the agent will alternate between exploration and testing phases.  The number of episodes in the exploration phase can be configured in section 3 of "design_agent_and_env.py" file.  If the user prefers to only explore or only test, the user can enter the command-line options ""--train_only" or "--test", respectively.  The full list of command-line options is available in the "options.py" file.
 """
 import os
-import pickle as cpickle
-import agent as Agent
 import utils
+from tqdm import trange
 
 NUM_BATCH = 1000
 TEST_FREQ = 2
@@ -31,7 +30,7 @@ def run_HAC(FLAGS, env, agent):
     else:
         start_batch = 0
 
-    for batch in range(start_batch, NUM_BATCH):
+    for batch in trange(start_batch, NUM_BATCH):
 
         num_episodes = agent.other_params["num_exploration_episodes"]
 
@@ -46,20 +45,20 @@ def run_HAC(FLAGS, env, agent):
 
         for episode in range(num_episodes):
 
-            print("\nBatch %d, Episode %d" % (batch, episode))
+            # print(f'\nBatch {batch}, Episode {episode}')
 
             # Train for an episode
             success = agent.train(env, episode)
 
             if success:
-                print("Batch %d, Episode %d End Goal Achieved\n" % (batch, episode))
+                # print("Batch %d, Episode %d End Goal Achieved\n" % (batch, episode))
 
                 # Increment successful episode counter if applicable
                 if mix_train_test and batch % TEST_FREQ == 0:
                     successful_episodes += 1
 
-                    # Save agent
-
+        print('mix_train_test: ', mix_train_test)
+        print('boolean: ', (batch + 1) % TEST_FREQ)
         # Finish evaluating policy if tested prior batch
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:
             # Log performance

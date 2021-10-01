@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class ExperienceBuffer():
+class ExperienceBuffer:
 
     def __init__(self, max_buffer_size, batch_size):
         self.size = 0
