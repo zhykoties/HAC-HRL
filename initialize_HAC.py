@@ -13,7 +13,7 @@ from run_HAC import run_HAC
 FLAGS = parse_options()
 utils.set_logger('train.log')
 designer = importlib.import_module(f'experiments.{FLAGS.env}.design_agent_and_env')
-params = utils.Params(os.path.join('experiments', FLAGS.env, 'design_agent_and_env', FLAGS.model))
+params = utils.Params(os.path.join('experiments', FLAGS.env, 'design_agent_and_env', FLAGS.model, 'params.json'))
 print('params: ', params)
 params.update(params=FLAGS)
 
@@ -23,4 +23,4 @@ print('FLAGS: ', params)
 agent, env = designer.design_agent_and_env(params)
 
 # Begin training
-run_HAC(FLAGS, env, agent)
+run_HAC(params, env, agent)
