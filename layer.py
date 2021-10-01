@@ -466,8 +466,10 @@ class Layer:
                     map(lambda x: torch.tensor(x, dtype=torch.float32, device=self.device), batch)
 
                 # Get the actions and the state values to compute the targets
-                new_actions = self.actor_target(new_states, goals)
-                wanted_qs = self.critic_target(new_states, goals, new_actions.detach())
+                new_actions = self.actor(new_states, goals)
+                # new_actions = self.actor_target(new_states, goals)
+                wanted_qs = self.critic(new_states, goals, new_actions.detach())
+                # wanted_qs = self.critic_target(new_states, goals, new_actions.detach())
 
                 # Compute the target
                 rewards = rewards.unsqueeze(1)

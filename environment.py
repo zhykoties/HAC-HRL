@@ -201,7 +201,6 @@ class Environment:
                 if np.absolute(end_goal[0]) > np.pi / 4 and forearm_pos[2] > 0.05 and wrist_1_pos[2] > 0.15:
                     goal_possible = True
 
-
         elif not test and self.goal_space_train is not None:
             for i in range(len(self.goal_space_train)):
                 end_goal[i] = np.random.uniform(self.goal_space_train[i][0], self.goal_space_train[i][1])
