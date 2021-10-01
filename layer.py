@@ -125,11 +125,8 @@ class Layer:
 
         # If testing mode or testing subgoals, action is output of actor network without noise
         if agent.FLAGS.test or subgoal_test:
-
-            print('current)state: ', self.current_state.shape)
-            assert len(self.current_state.shape) == 1
-            state_pt = torch.tensor(self.current_state, device=self.device).unsqueeze(0)
-            goal_pt = torch.tensor(self.goal, device=self.device).unsqueeze(0)
+            state_pt = torch.tensor(self.current_state, dtype='float32', device=self.device).unsqueeze(0)
+            goal_pt = torch.tensor(self.goal, dtype='float32', device=self.device).unsqueeze(0)
             return self.actor(state_pt, goal_pt).data.cpu().numpy(), "Policy", subgoal_test
 
         else:
