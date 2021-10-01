@@ -29,25 +29,26 @@ class Critic(nn.Module):
         else:
             action_dim = env.subgoal_dim
 
-        self.critic = nn.Sequential(
-                        nn.Linear(env.state_dim + action_dim + self.goal_dim, 64),
-                        nn.ReLU(),
-                        nn.Linear(64, 64),
-                        nn.ReLU(),
-                        nn.Linear(64, 1)
-                        )
+        self.linear1 = nn.Linear(self.state_dim + action_dim + self.goal_dim, 64)
+        self.relu1 = nn.ReLU()
+        self.linear2 = nn.Linear(64, 64)
+        self.relu2 = nn.ReLU()
+        self.output = nn.Linear(64, 1)
 
         # Set parameters to give critic optimistic initialization near q_init
         self.q_init = -0.067
         self.q_offset = -math.log(self.q_limit / self.q_init - 1)
 
     def forward(self, state, goal, action):
-        return torch.sigmoid(self.critic(torch.cat([state, goal, action], 1)) + self.q_offset) * self.q_limit
+        h1 = self.relu1(self.linear1(torch.cat([state, goal, action], 1)))
+        h2 = self.relu2(self.linear2(h1))
+        h3 = self.output(h2)
+        return torch.sigmoid(h3 + self.q_offset) * self.q_limit
 
     def update_target_weights(self, source):
-        for target_param, param in zip(self.critic.parameters(), source.critic.parameters()):
+        for target_param, param in zip(self.parameters(), source.parameters()):
             target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
 
     def target_hard_init(self, source):
-        for target_param, param in zip(self.critic.parameters(), source.critic.parameters()):
+        for target_param, param in zip(self.parameters(), source.parameters()):
             target_param.data.copy_(param.data)

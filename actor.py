@@ -34,22 +34,23 @@ class Actor(nn.Module):
 
         # self.exploration_policies = exploration_policies
         self.tau = tau
-        self.actor = nn.Sequential(
-            nn.Linear(self.state_dim + self.goal_dim, 64),
-            nn.ReLU(),
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, self.action_space_size),
-            nn.Tanh()
-        )
+        self.linear1 = nn.Linear(self.state_dim + self.goal_dim, 64)
+        self.relu1 = nn.ReLU()
+        self.linear2 = nn.Linear(64, 64)
+        self.relu2 = nn.ReLU()
+        self.output = nn.Linear(64, self.action_space_size)
+        self.tanh = nn.Tanh()
 
     def forward(self, state, goal):
-        return self.actor(torch.cat([state, goal], 1)) * self.action_space_bounds + self.action_offset
+        h1 = self.relu1(self.linear1(torch.cat([state, goal], 1)))
+        h2 = self.relu2(self.linear2(h1))
+        h3 = self.tanh(self.output(h2))
+        return h3 * self.action_space_bounds + self.action_offset
 
     def update_target_weights(self, source):
-        for target_param, param in zip(self.actor.parameters(), source.actor.parameters()):
+        for target_param, param in zip(self.parameters(), source.parameters()):
             target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
 
     def target_hard_init(self, source):
-        for target_param, param in zip(self.actor.parameters(), source.actor.parameters()):
+        for target_param, param in zip(self.parameters(), source.parameters()):
             target_param.data.copy_(param.data)
