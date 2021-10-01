@@ -1,7 +1,6 @@
 import math
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class Critic(nn.Module):
@@ -43,7 +42,7 @@ class Critic(nn.Module):
         self.q_offset = -math.log(self.q_limit / self.q_init - 1)
 
     def forward(self, state, goal, action):
-        return F.sigmoid(self.critic(torch.cat([state, goal, action], 1)) + self.q_offset) * self.q_limit
+        return torch.sigmoid(self.critic(torch.cat([state, goal, action], 1)) + self.q_offset) * self.q_limit
 
     def update_target_weights(self, source):
         for target_param, param in zip(self.critic.parameters(), source.critic.parameters()):

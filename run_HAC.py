@@ -61,7 +61,7 @@ def run_HAC(FLAGS, env, agent):
                     # Save agent
 
         # Finish evaluating policy if tested prior batch
-        if mix_train_test and batch % TEST_FREQ == 0:
+        if mix_train_test and (batch + 1) % TEST_FREQ == 0:
             # Log performance
             success_rate = successful_episodes / num_test_episodes * 100
             print("\nTesting Success Rate %.2f%%" % success_rate)
