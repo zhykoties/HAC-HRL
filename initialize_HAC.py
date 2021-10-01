@@ -14,6 +14,7 @@ FLAGS = parse_options()
 utils.set_logger('train.log')
 designer = importlib.import_module(f'experiments.{FLAGS.env}.design_agent_and_env')
 params = utils.Params(os.path.join('experiments', FLAGS.env, 'design_agent_and_env', FLAGS.model))
+print('params: ', params)
 params.update(params=FLAGS)
 
 # Instantiate the agent and Mujoco environment. The designer must assign values to the hyperparameters listed in the
