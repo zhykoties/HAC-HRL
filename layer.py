@@ -129,7 +129,7 @@ class Layer:
             goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
             print('goal: ', goal_pt.shape)
             print('state: ', state_pt.shape)
-            return self.actor(state_pt, goal_pt).data.cpu().numpy(), "Policy", subgoal_test
+            return self.actor(state_pt, goal_pt).data.cpu().numpy()[0], "Policy", subgoal_test
 
         else:
 
@@ -139,7 +139,7 @@ class Layer:
                 print('goal: ', goal_pt.shape)
                 print('state: ', state_pt.shape)
                 # Choose noisy action
-                action = self.add_noise(self.actor(state_pt, goal_pt).data.cpu().numpy(), env)
+                action = self.add_noise(self.actor(state_pt, goal_pt).data.cpu().numpy()[0], env)
 
                 action_type = "Noisy Policy"
 
