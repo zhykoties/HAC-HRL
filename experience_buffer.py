@@ -27,6 +27,7 @@ class ExperienceBuffer:
         states, actions, rewards, new_states, goals, is_terminals = [], [], [], [], [], []
         dist = np.random.randint(0, high=self.size, size=self.batch_size)
 
+        # TODO: replace with Transition(*zip(*transitions))
         for i in dist:
             states.append(self.experiences[i][0])
             actions.append(self.experiences[i][1])

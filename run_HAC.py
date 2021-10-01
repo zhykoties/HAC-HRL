@@ -25,8 +25,8 @@ def run_HAC(FLAGS, env, agent):
         os.makedirs(model_dir)
     # If not retraining, restore weights
     # if we are not retraining from scratch, just restore weights
-    if not FLAGS.retrain:
-        start_batch = utils.load_checkpoint(agent, model_dir, 'last')
+    if FLAGS.restore_file is not None:
+        start_batch = utils.load_checkpoint(agent, model_dir, FLAGS.restore_file)
     else:
         start_batch = 0
 

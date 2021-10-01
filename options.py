@@ -56,6 +56,11 @@ def parse_options():
         help='Print summary of each transition'
     )
 
+    parser.add_argument(
+        '--restore-file',
+        default=None,
+        help='Optional, name of file in model_dir containing weights to reload before training')  # 'last' or 'epoch_#'
+
     FLAGS, unparsed = parser.parse_known_args()
 
     return FLAGS
