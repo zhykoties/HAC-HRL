@@ -4,12 +4,14 @@ import torch.nn as nn
 
 class Actor(nn.Module):
 
-    def __init__(self, env, layer_number, FLAGS, tau=0.05):
+    def __init__(self, env, layer_number, FLAGS, device, tau=0.05):
         super(Actor, self).__init__()
+        self.device = device
 
         # Determine range of actor network outputs.  This will be used to configure outer layer of neural network
         if layer_number == 0:
-            self.action_space_bounds = env.action_bounds
+            print('action bounds: ', env.action_bounds)
+            self.action_space_bounds = torch.tensor(env.action_bounds)
             self.action_offset = env.action_offset
         else:
             # Determine symmetric range of subgoal space and offset

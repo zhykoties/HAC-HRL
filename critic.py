@@ -6,11 +6,12 @@ import torch.nn.functional as F
 
 class Critic(nn.Module):
 
-    def __init__(self, env, layer_number, FLAGS, gamma=0.98, tau=0.05):
+    def __init__(self, env, layer_number, FLAGS, device, gamma=0.98, tau=0.05):
         super(Critic, self).__init__()
         self.critic_name = 'critic_' + str(layer_number)
         self.gamma = gamma
         self.tau = tau
+        self.device = device
 
         self.q_limit = -FLAGS.time_scale
 

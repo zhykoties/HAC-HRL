@@ -54,13 +54,13 @@ class Layer:
 
         # Initialize actor and critic networks
         lr = 1e-3
-        self.actor = Actor(env, self.layer_number, FLAGS)
-        self.actor_target = Actor(env, self.layer_number, FLAGS)
+        self.actor = Actor(env, self.layer_number, FLAGS, self.device)
+        self.actor_target = Actor(env, self.layer_number, FLAGS, self.device)
         self.actor.to(device)
         self.actor_target.to(device)
         self.actor_target.target_hard_init(self.actor)
-        self.critic = Critic(env, self.layer_number, FLAGS)
-        self.critic_target = Critic(env, self.layer_number, FLAGS)
+        self.critic = Critic(env, self.layer_number, FLAGS, self.device)
+        self.critic_target = Critic(env, self.layer_number, FLAGS, self.device)
         self.critic.to(device)
         self.critic_target.to(device)
         self.critic_target.target_hard_init(self.critic)
