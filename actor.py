@@ -46,9 +46,9 @@ class Actor(nn.Module):
         return self.actor(torch.cat([state, goal], 1)) * self.action_space_bounds + self.action_offset
 
     def update_target_weights(self, source):
-        for target_param, param in zip(self.actor.parameters(), source.parameters()):
+        for target_param, param in zip(self.actor.parameters(), source.actor.parameters()):
             target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
 
     def target_hard_init(self, source):
-        for target_param, param in zip(self.actor.parameters(), source.parameters()):
+        for target_param, param in zip(self.actor.parameters(), source.actor.parameters()):
             target_param.data.copy_(param.data)

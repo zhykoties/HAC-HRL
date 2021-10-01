@@ -45,9 +45,9 @@ class Critic(nn.Module):
         return F.sigmoid(self.critic(torch.cat([state, goal, action], 1)) + self.q_offset) * self.q_limit
 
     def update_target_weights(self, source):
-        for target_param, param in zip(self.actor.parameters(), source.parameters()):
+        for target_param, param in zip(self.critic.parameters(), source.critic.parameters()):
             target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
 
     def target_hard_init(self, source):
-        for target_param, param in zip(self.actor.parameters(), source.parameters()):
+        for target_param, param in zip(self.critic.parameters(), source.critic.parameters()):
             target_param.data.copy_(param.data)
