@@ -33,9 +33,6 @@ class Agent:
         self.model_dir = None
         self.model_loc = None
 
-        # Initialize actor/critic networks.  Load saved parameters if not retraining
-        self.initialize_networks()
-
         # goal_array will store goal for each layer of agent.
         self.goal_array = [None for _ in range(FLAGS.layers)]
 
