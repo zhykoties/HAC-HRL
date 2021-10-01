@@ -361,8 +361,8 @@ class Layer:
                 agent.steps_taken += 1
                 # print("Num Actions Taken: ", agent.steps_taken)
 
-                if agent.steps_taken >= env.max_actions:
-                    print("Out of actions (Steps: %d)" % agent.steps_taken)
+                # if agent.steps_taken >= env.max_actions:
+                #    print("Out of actions (Steps: %d)" % agent.steps_taken)
 
                 agent.current_state = next_state
 
@@ -435,8 +435,8 @@ class Layer:
             if (
                     max_lay_achieved is not None and max_lay_achieved >= self.layer_number) or agent.steps_taken >= env.max_actions or attempts_made >= self.time_limit:
 
-                if self.layer_number == agent.FLAGS.layers - 1:
-                    print("HL Attempts Made: ", attempts_made)
+                # if self.layer_number == agent.FLAGS.layers - 1:
+                #    print("HL Attempts Made: ", attempts_made)
 
                 # If goal was not achieved after max number of attempts, set maxed out flag to true
                 if attempts_made >= self.time_limit and not goal_status[self.layer_number]:

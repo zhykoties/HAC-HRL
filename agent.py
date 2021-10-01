@@ -114,7 +114,7 @@ class Agent:
 
         # Select final goal from final goal space, defined in "design_agent_and_env.py" 
         self.goal_array[self.FLAGS.layers - 1] = env.get_next_goal(self.FLAGS.test)
-        print("Next End Goal: ", self.goal_array[self.FLAGS.layers - 1])
+        # print("Next End Goal: ", self.goal_array[self.FLAGS.layers - 1])
 
         # Select initial state from in initial state space, defined in environment.py
         self.current_state = env.reset_sim()
