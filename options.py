@@ -22,6 +22,7 @@ Options Include:
 - If included, summary of each transition will be printed
 """
 
+
 def parse_options():
     parser = argparse.ArgumentParser()
 
@@ -56,6 +57,5 @@ def parse_options():
     )
 
     FLAGS, unparsed = parser.parse_known_args()
-
 
     return FLAGS

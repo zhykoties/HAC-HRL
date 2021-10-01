@@ -1,56 +1,63 @@
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import logging
+import os
+import shutil
+import sys
+import numpy as np
+from tqdm import tqdm
+import torch
 
-def layer(input_layer, num_next_neurons, is_output=False):
-    num_prev_neurons = int(input_layer.shape[1])
-    shape = [num_prev_neurons, num_next_neurons]
-    
-    if is_output:
-        weight_init = tf.random_uniform_initializer(minval=-3e-3, maxval=3e-3)
-        bias_init = tf.random_uniform_initializer(minval=-3e-3, maxval=3e-3)
-    else:
-        # 1/sqrt(f)
-        fan_in_init = 1 / num_prev_neurons ** 0.5
-        weight_init = tf.random_uniform_initializer(minval=-fan_in_init, maxval=fan_in_init)
-        bias_init = tf.random_uniform_initializer(minval=-fan_in_init, maxval=fan_in_init) 
 
-    weights = tf.get_variable("weights", shape, initializer=weight_init)
-    biases = tf.get_variable("biases", [num_next_neurons], initializer=bias_init)
+logger = logging.getLogger('HAC.utils')
 
-    dot = tf.matmul(input_layer, weights) + biases
 
-    if is_output:
-        return dot
+def set_logger(log_path):
+    """
+    Set the logger to log info in terminal and file `log_path`.
+    In general, it is useful to have a logger so that every output to the terminal is saved
+    in a permanent file. Here we save it to `model_dir/train.log`.
+    Example:
+    logging.info('Starting training...')
+    Args:
+        log_path: (string) where to log
+    """
+    _logger = logging.getLogger('TS')
+    _logger.setLevel(logging.INFO)
 
-    relu = tf.nn.relu(dot)
-    return relu
+    fmt = logging.Formatter('[%(asctime)s] %(name)s: %(message)s', '%m/%d %H:%M:%S')
 
-def layer_goal_nn(input_layer, num_next_neurons, is_output=False):
-    num_prev_neurons = int(input_layer.shape[1])
-    shape = [num_prev_neurons, num_next_neurons]
-    
-    
-    fan_in_init = 1 / num_prev_neurons ** 0.5
-    weight_init = tf.random_uniform_initializer(minval=-fan_in_init, maxval=fan_in_init)
-    bias_init = tf.random_uniform_initializer(minval=-fan_in_init, maxval=fan_in_init) 
+    class TqdmHandler(logging.StreamHandler):
+        def __init__(self, formatter):
+            logging.StreamHandler.__init__(self)
+            self.setFormatter(formatter)
+            self.setStream(tqdm)
 
-    weights = tf.get_variable("weights", shape, initializer=weight_init)
-    biases = tf.get_variable("biases", [num_next_neurons], initializer=bias_init)
+        def emit(self, record):
+            msg = self.format(record)
+            tqdm.write(msg)
 
-    dot = tf.matmul(input_layer, weights) + biases
+    file_handler = logging.FileHandler(log_path)
+    file_handler.setFormatter(fmt)
+    _logger.addHandler(file_handler)
+    _logger.addHandler(TqdmHandler(fmt))
+    # handler = logging.StreamHandler(stream=sys.stdout)
+    # _logger.addHandler(handler)
 
-    if is_output:
-        return dot
+    # https://stackoverflow.com/questions/6234405/logging-uncaught-exceptions-in-python?noredirect=1&lq=1
+    def handle_exception(exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            _logger.info('=*=*=*= Keyboard interrupt =*=*=*=')
+            return
 
-    relu = tf.nn.relu(dot)
-    return relu
+        _logger.error("Exception --->", exc_info=(exc_type, exc_value, exc_traceback))
+
+    sys.excepthook = handle_exception
 
 
 # Below function prints out options and environment specified by user
-def print_summary(FLAGS,env):
-
+def print_summary(FLAGS, env):
     print("\n- - - - - - - - - - -")
-    print("Task Summary: ","\n")
+    print("Task Summary: ", "\n")
     print("Environment: ", env.name)
     print("Number of Layers: ", FLAGS.layers)
     print("Time Limit per Layer: ", FLAGS.time_scale)
@@ -62,29 +69,33 @@ def print_summary(FLAGS,env):
 
 
 # Below function ensures environment configurations were properly entered
-def check_validity(model_name, goal_space_train, goal_space_test, end_goal_thresholds, initial_state_space, subgoal_bounds, subgoal_thresholds, max_actions, timesteps_per_action):
-
+def check_validity(model_name, goal_space_train, goal_space_test, end_goal_thresholds, initial_state_space,
+                   subgoal_bounds, subgoal_thresholds, max_actions, timesteps_per_action):
     # Ensure model file is an ".xml" file
     assert model_name[-4:] == ".xml", "Mujoco model must be an \".xml\" file"
 
     # Ensure upper bounds of range is >= lower bound of range
     if goal_space_train is not None:
         for i in range(len(goal_space_train)):
-            assert goal_space_train[i][1] >= goal_space_train[i][0], "In the training goal space, upper bound must be >= lower bound"
+            assert goal_space_train[i][1] >= goal_space_train[i][
+                0], "In the training goal space, upper bound must be >= lower bound"
 
     if goal_space_test is not None:
         for i in range(len(goal_space_test)):
-            assert goal_space_test[i][1] >= goal_space_test[i][0], "In the training goal space, upper bound must be >= lower bound"
+            assert goal_space_test[i][1] >= goal_space_test[i][
+                0], "In the training goal space, upper bound must be >= lower bound"
 
     for i in range(len(initial_state_space)):
-        assert initial_state_space[i][1] >= initial_state_space[i][0], "In initial state space, upper bound must be >= lower bound"
-    
-    for i in range(len(subgoal_bounds)):
-        assert subgoal_bounds[i][1] >= subgoal_bounds[i][0], "In subgoal space, upper bound must be >= lower bound" 
+        assert initial_state_space[i][1] >= initial_state_space[i][
+            0], "In initial state space, upper bound must be >= lower bound"
 
-    # Make sure end goal spaces and thresholds have same first dimension
+    for i in range(len(subgoal_bounds)):
+        assert subgoal_bounds[i][1] >= subgoal_bounds[i][0], "In subgoal space, upper bound must be >= lower bound"
+
+        # Make sure end goal spaces and thresholds have same first dimension
     if goal_space_train is not None and goal_space_test is not None:
-        assert len(goal_space_train) == len(goal_space_test) == len(end_goal_thresholds), "End goal space and thresholds must have same first dimension"
+        assert len(goal_space_train) == len(goal_space_test) == len(
+            end_goal_thresholds), "End goal space and thresholds must have same first dimension"
 
     # Makde sure suboal spaces and thresholds have same dimensions
     assert len(subgoal_bounds) == len(subgoal_thresholds), "Subgoal space and thresholds must have same first dimension"
@@ -95,4 +106,62 @@ def check_validity(model_name, goal_space_train, goal_space_test, end_goal_thres
     assert timesteps_per_action > 0, "Timesteps per action should be a positive integer"
 
 
+def save_checkpoint(agent, batch, success_rate, file_dir):
+    """
+    Saves model and training parameters at file_dir + 'last.pth.tar'. If is_best==True, also saves
+    file_dir + 'best.pth.tar'
+    Args:
+        state: (dict) contains model's state_dict, may contain other keys such as episode, optimizer state_dict
+        is_best: (bool) True if it is the best model seen till now
+        file_dir: (string) folder where parameters are to be saved
+        loss: (np.array)
+        ins_name: (int) instance index
+    """
+    filepath = os.path.join(file_dir, f'batch_{batch}.pth.tar')
+    states = {'num_layers': agent.num_layers,
+              'success_rate': success_rate,
+              'episode': batch}
+    for i in range(agent.num_layers):
+        states[f'level_{i}'] = {
+            'actor': agent.layers[i].actor.state_dict(),
+            'actor_optim': agent.layers[i].actor_optimizer.state_dict(),
+            'actor_target': agent.layers[i].actor_target.state_dict(),
+            'critic': agent.layers[i].critic.state_dict(),
+            'critic_optim': agent.layers[i].critic_optimizer.state_dict(),
+            'critic_target': agent.layers[i].critic_target.state_dict(),
+        }
+    torch.save(states, filepath)
+    logger.info(f'file_dir saved to {filepath}')
+    shutil.copyfile(filepath, os.path.join(file_dir, 'last.pth.tar'))
 
+
+def load_checkpoint(agent, file_dir, restore_file):
+    """
+    Loads model parameters (state_dict) from file_path. If optimizer is provided, loads state_dict of
+    optimizer assuming it is present in file_dir.
+    Args:
+        restore_file: (string) filename which needs to be loaded
+        model: (torch.nn.Module) model for which the parameters are loaded
+        optimizer: (torch.optim) optional: resume optimizer from file_dir
+    """
+    filepath = os.path.join(file_dir, restore_file + '.pth.tar')
+    if not os.path.exists(file_dir):
+        raise FileNotFoundError(f"File doesn't exist {filepath}")
+    else:
+        logger.info(f'Restoring parameters from {filepath}')
+    if torch.cuda.is_available():
+        filepath = torch.load(filepath, map_location='cuda')
+    else:
+        filepath = torch.load(filepath, map_location='cpu')
+    num_layers = filepath['num_layers']
+    assert num_layers == agent.num_layers
+    for i in range(num_layers):
+        agent.layers[i].actor.load_state_dict(filepath[f'level_{i}']['actor'])
+        agent.layers[i].actor_optimizer.load_state_dict(filepath[f'level_{i}']['actor_optim'])
+        agent.layers[i].actor_target.load_state_dict(filepath[f'level_{i}']['actor_target'])
+        agent.layers[i].critic.load_state_dict(filepath[f'level_{i}']['critic'])
+        agent.layers[i].critic_optimizer.load_state_dict(filepath[f'level_{i}']['critic_optim'])
+        agent.layers[i].critic_target.load_state_dict(filepath[f'level_{i}']['critic_target'])
+
+    logger.info(f"Restored parameters have success rate: {filepath['success_rate']}")
+    return filepath['episode']
