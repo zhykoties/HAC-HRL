@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import shutil
@@ -8,6 +9,59 @@ import torch
 
 
 logger = logging.getLogger('HAC.utils')
+
+
+class Params:
+    """
+    Class that loads hyperparameters from a json file as a dictionary (also support nested dicts).
+    Example:
+    params = Params(json_path)
+    # access key-value pairs
+    params.learning_rate
+    params['learning_rate']
+    # change the value of learning_rate in params
+    params.learning_rate = 0.5
+    params['learning_rate'] = 0.5
+    # print params
+    print(params)
+    # combine two json files
+    params.update(Params(json_path2))
+    """
+
+    def __init__(self, json_path=None):
+        if json_path is not None and os.path.isfile(json_path):
+            with open(json_path) as f:
+                params = json.load(f)
+                self.__dict__.update(params)
+        else:
+            self.__dict__ = {}
+
+    def save(self, json_path):
+        with open(json_path, 'w') as f:
+            json.dump(self.__dict__, f, indent=4, ensure_ascii=False)
+
+    def update(self, json_path=None, params=None):
+        """Loads parameters from json file"""
+        if json_path is not None:
+            with open(json_path) as f:
+                params = json.load(f)
+                self.__dict__.update(params)
+        elif params is not None:
+            self.__dict__.update(vars(params))
+        else:
+            raise Exception('One of json_path and params must be provided in Params.update()!')
+
+    def __contains__(self, item):
+        return item in self.__dict__
+
+    def __getitem__(self, key):
+        return getattr(self, str(key))
+
+    def __setitem__(self, key, value):
+        return setattr(self, key, value)
+
+    def __str__(self):
+        return json.dumps(self.__dict__, sort_keys=True, indent=4, ensure_ascii=False)
 
 
 def set_logger(log_path):
