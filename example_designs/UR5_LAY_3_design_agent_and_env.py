@@ -22,9 +22,9 @@ def design_agent_and_env(FLAGS):
     See Section 3 of this file for other agent hyperparameters that can be configured.
     """
 
-    FLAGS.layers = 2    # Enter number of levels in agent hierarchy
+    FLAGS.layers = 3    # Enter number of levels in agent hierarchy
 
-    FLAGS.time_scale = 25    # Enter max sequence length in which each policy will specialize
+    FLAGS.time_scale = 10    # Enter max sequence length in which each policy will specialize
 
     # Enter max number of atomic actions.  This will typically be FLAGS.time_scale**(FLAGS.layers).  However, in the UR5 Reacher task, we use a shorter episode length.
     max_actions = 600
@@ -35,18 +35,18 @@ def design_agent_and_env(FLAGS):
     """
     2. DESIGN ENVIRONMENT
 
-        a. Designer must provide the original UMDP (S,A,T,G,R).
-            - The S,A,T components can be fulfilled by providing the Mujoco model.
-            - The user must separately specifiy the initial state space.
-            - G can be provided by specifying the end goal space.
-            - R, which by default uses a shortest path {-1,0} reward function, can be implemented by specifying two components: (i) a function that maps the state space to the end goal space and (ii) the end goal achievement thresholds for each dimensions of the end goal.
+        a. Designer must provide the original UMDP (S,A,T,G,R).  
+            - The S,A,T components can be fulfilled by providing the Mujoco model.  
+            - The user must separately specifiy the initial state space.  
+            - G can be provided by specifying the end goal space.  
+            - R, which by default uses a shortest path {-1,0} reward function, can be implemented by specifying two components: (i) a function that maps the state space to the end goal space and (ii) the end goal achievement thresholds for each dimensions of the end goal. 
 
-        b.  In order to convert the original UMDP into a hierarchy of k UMDPs, the designer must also provide
+        b.  In order to convert the original UMDP into a hierarchy of k UMDPs, the designer must also provide 
             - The subgoal action space, A_i, for all higher-level UMDPs i > 0
-            - R_i for levels 0 <= i < k-1 (i.e., all levels that try to achieve goals in the subgoal space).  As in the original UMDP, R_i can be implemented by providing two components:(i) a function that maps the state space to the subgoal space and (ii) the subgoal achievement thresholds.
+            - R_i for levels 0 <= i < k-1 (i.e., all levels that try to achieve goals in the subgoal space).  As in the original UMDP, R_i can be implemented by providing two components:(i) a function that maps the state space to the subgoal space and (ii) the subgoal achievement thresholds. 
 
         c.  Designer should also provide subgoal and end goal visualization functions in order to show video of training.  These can be updated in "display_subgoal" and "display_end_goal" methods in the "environment.py" file.
-
+            
     """
 
     # Provide file name of Mujoco model(i.e., "pendulum.xml").  Make sure file is stored in "mujoco_files" folder
@@ -151,3 +151,4 @@ def design_agent_and_env(FLAGS):
     agent = Agent(FLAGS,env,agent_params)
 
     return agent, env
+
