@@ -4,7 +4,7 @@
 import logging
 import os
 import utils
-from tqdm import trange
+from tqdm import tqdm, trange
 
 NUM_BATCH = 1000
 TEST_FREQ = 2
@@ -35,7 +35,7 @@ def run_HAC(FLAGS, env, agent):
     else:
         start_batch = 0
 
-    for batch in trange(start_batch, NUM_BATCH):
+    for batch in tqdm(range(start_batch, NUM_BATCH), initial=start_batch):
 
         num_episodes = agent.other_params["num_exploration_episodes"]
 
