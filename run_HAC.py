@@ -57,6 +57,7 @@ def run_HAC(FLAGS, env, agent):
             # Train for an episode
             success = agent.train(env, episode)
 
+            print('success: ', success)
             if success:
                 # print("Batch %d, Episode %d End Goal Achieved\n" % (batch, episode))
 
