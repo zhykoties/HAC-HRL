@@ -480,10 +480,6 @@ class Layer:
                 # Update the critic network
                 self.critic_optimizer.zero_grad()
                 state_action_batch = self.critic(old_states, goals, actions)
-                print('critic predict: ')
-                print(state_action_batch)
-                print('true: ')
-                print(expected_values)
                 value_loss = F.mse_loss(state_action_batch, expected_values.detach())
                 value_loss.backward()
                 self.critic_optimizer.step()
@@ -491,8 +487,6 @@ class Layer:
                 # Update the actor network
                 self.actor_optimizer.zero_grad()
                 critic_value = self.critic(old_states, goals, self.actor(old_states, goals))
-                print('critic_value: ')
-                print(critic_value)
                 policy_loss = torch.mean(-critic_value)
                 policy_loss.backward()
                 self.actor_optimizer.step()
