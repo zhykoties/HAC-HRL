@@ -22,12 +22,12 @@ def design_agent_and_env(FLAGS):
     See Section 3 of this file for other agent hyperparameters that can be configured.
     """
 
-    FLAGS.layers = 3    # Enter number of levels in agent hierarchy
+    FLAGS.layers = 2    # Enter number of levels in agent hierarchy
 
-    FLAGS.time_scale = 10    # Enter max sequence length in which each policy will specialize
+    FLAGS.time_scale = 32    # Enter max sequence length in which each policy will specialize
 
     # Enter max number of atomic actions.  This will typically be FLAGS.time_scale**(FLAGS.layers).
-    max_actions = FLAGS.time_scale**FLAGS.layers
+    max_actions = 1000
 
     timesteps_per_action = 10    # Provide the number of time steps per atomic action.
 
