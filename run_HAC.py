@@ -42,7 +42,6 @@ def run_HAC(FLAGS, env, agent):
     for batch in trange(start_batch, NUM_BATCH):
 
         num_episodes = agent.other_params["num_exploration_episodes"]
-        num_episodes = 5
 
         # Evaluate policy every TEST_FREQ batches if interleaving training and testing
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:
@@ -53,6 +52,7 @@ def run_HAC(FLAGS, env, agent):
             # Reset successful episode counter
             successful_episodes = 0
 
+        num_episodes = 5
         for episode in trange(num_episodes):
 
             # print(f'\nBatch {batch}, Episode {episode}')
