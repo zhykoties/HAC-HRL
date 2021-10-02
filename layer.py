@@ -372,17 +372,18 @@ class Layer:
 
             attempts_made += 1
 
-            # Print if goal from current layer as been achieved
-            if goal_status[self.layer_number]:
-                if self.layer_number < agent.FLAGS.layers - 1:
-                    print("SUBGOAL ACHIEVED")
-                print("\nEpisode %d, Layer %d, Attempt %d Goal Achieved" % (
-                    episode_num, self.layer_number, attempts_made))
-                print("Goal: ", self.goal)
-                if self.layer_number == agent.FLAGS.layers - 1:
-                    print("Hindsight Goal: ", env.project_state_to_end_goal(env.sim, agent.current_state))
-                else:
-                    print("Hindsight Goal: ", env.project_state_to_subgoal(env.sim, agent.current_state))
+            if agent.FLAGS.verbose:
+                # Print if goal from current layer as been achieved
+                if goal_status[self.layer_number]:
+                    if self.layer_number < agent.FLAGS.layers - 1:
+                        print("SUBGOAL ACHIEVED")
+                    print("\nEpisode %d, Layer %d, Attempt %d Goal Achieved" % (
+                        episode_num, self.layer_number, attempts_made))
+                    print("Goal: ", self.goal)
+                    if self.layer_number == agent.FLAGS.layers - 1:
+                        print("Hindsight Goal: ", env.project_state_to_end_goal(env.sim, agent.current_state))
+                    else:
+                        print("Hindsight Goal: ", env.project_state_to_subgoal(env.sim, agent.current_state))
 
             # Perform hindsight learning using action actually executed (low-level action or hindsight subgoal)
             if self.layer_number == 0:
