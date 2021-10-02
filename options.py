@@ -27,7 +27,7 @@ def parse_options():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--env',
-                        default='UR5',
+                        default='ur5',
                         help='Name of the environment')
 
     parser.add_argument('--model',

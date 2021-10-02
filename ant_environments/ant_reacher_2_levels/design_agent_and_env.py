@@ -26,7 +26,7 @@ def design_agent_and_env(FLAGS):
 
     FLAGS.time_scale = 23    # Enter max sequence length in which each policy will specialize
 
-    # Enter max number of atomic actions.  This will typically be FLAGS.time_scale**(FLAGS.layers).  However, in the UR5 Reacher task, we use a shorter episode length.
+    # Enter max number of atomic actions.  This will typically be FLAGS.time_scale**(FLAGS.layers).  However, in the ur5 Reacher task, we use a shorter episode length.
     max_actions = 500
     # max_actions = 15
 
@@ -68,7 +68,7 @@ def design_agent_and_env(FLAGS):
 
     # Provide end goal space.  The code supports two types of end goal spaces if user would like to train on a larger end goal space.  If user needs to make additional customizations to the end goals, the "get_next_goal" method in "environment.py" can be updated.
 
-    # In the UR5 reacher environment, the end goal will be the desired joint positions for the 3 main joints.
+    # In the ur5 reacher environment, the end goal will be the desired joint positions for the 3 main joints.
     max_range = 9.5
     goal_space_train = [[-max_range,max_range],[-max_range,max_range],[0.45,0.55]]
     goal_space_test = [[-max_range,max_range],[-max_range,max_range],[0.45,0.55]]
@@ -124,7 +124,7 @@ def design_agent_and_env(FLAGS):
     # Define percentage of actions that a subgoal level (i.e. level i > 0) will test subgoal actions
     agent_params["subgoal_test_perc"] = 0.3
 
-    # Define subgoal penalty for missing subgoal.  Please note that by default the Q value target for missed subgoals does not include Q-value of next state (i.e, discount rate = 0).  As a result, the Q-value target for missed subgoal just equals penalty.  For instance in this 3-level UR5 implementation, if a level proposes a subgoal and misses it, the Q target value for this action would be -10.  To incorporate the next state in the penalty, go to the "penalize_subgoal" method in the "layer.py" file.
+    # Define subgoal penalty for missing subgoal.  Please note that by default the Q value target for missed subgoals does not include Q-value of next state (i.e, discount rate = 0).  As a result, the Q-value target for missed subgoal just equals penalty.  For instance in this 3-level ur5 implementation, if a level proposes a subgoal and misses it, the Q target value for this action would be -10.  To incorporate the next state in the penalty, go to the "penalize_subgoal" method in the "layer.py" file.
     agent_params["subgoal_penalty"] = -FLAGS.time_scale
 
     # Set exploration hyperparameters

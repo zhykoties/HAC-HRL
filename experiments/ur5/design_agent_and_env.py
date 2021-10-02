@@ -45,7 +45,7 @@ def design_agent_and_env(FLAGS):
     # Provide file name of Mujoco model(i.e., "pendulum.xml").  Make sure file is stored in "mujoco_files" folder
     model_name = "ur5.xml"
 
-    # Provide initial state space consisting of the ranges for all joint angles and velocities.  In the UR5 Reacher
+    # Provide initial state space consisting of the ranges for all joint angles and velocities.  In the ur5 Reacher
     # task, we use a random initial shoulder position and use fixed values for the remainder.  Initial joint
     # velocities are set to 0.
 
@@ -64,7 +64,7 @@ def design_agent_and_env(FLAGS):
     # end goal space.  If user needs to make additional customizations to the end goals, the "get_next_goal" method
     # in "environment.py" can be updated.
 
-    # In the UR5 reacher environment, the end goal will be the desired joint positions for the 3 main joints.
+    # In the ur5 reacher environment, the end goal will be the desired joint positions for the 3 main joints.
     goal_space_train = [[-np.pi, np.pi], [-np.pi / 4, 0], [-np.pi / 4, np.pi / 4]]
     goal_space_test = [[-np.pi, np.pi], [-np.pi / 4, 0], [-np.pi / 4, np.pi / 4]]
 
@@ -90,7 +90,7 @@ def design_agent_and_env(FLAGS):
 
     # Provide range for each dimension of subgoal space in order to configure subgoal actor networks.  Subgoal space
     # can be the same as the state space or some other projection out of the state space.  In our implementation of
-    # the UR5 reacher task, the subgoal space is the state space, which is the concatenation of all joint positions
+    # the ur5 reacher task, the subgoal space is the state space, which is the concatenation of all joint positions
     # and joint velocities.
 
     subgoal_bounds = np.array(
@@ -124,7 +124,7 @@ def design_agent_and_env(FLAGS):
     # Define percentage of actions that a subgoal level (i.e. level i > 0) will test subgoal actions
     agent_params["subgoal_test_perc"] = 0.3
 
-    # Define subgoal penalty for missing subgoal.  Please note that by default the Q value target for missed subgoals does not include Q-value of next state (i.e, discount rate = 0).  As a result, the Q-value target for missed subgoal just equals penalty.  For instance in this 3-level UR5 implementation, if a level proposes a subgoal and misses it, the Q target value for this action would be -10.  To incorporate the next state in the penalty, go to the "penalize_subgoal" method in the "layer.py" file.
+    # Define subgoal penalty for missing subgoal.  Please note that by default the Q value target for missed subgoals does not include Q-value of next state (i.e, discount rate = 0).  As a result, the Q-value target for missed subgoal just equals penalty.  For instance in this 3-level ur5 implementation, if a level proposes a subgoal and misses it, the Q target value for this action would be -10.  To incorporate the next state in the penalty, go to the "penalize_subgoal" method in the "layer.py" file.
     agent_params["subgoal_penalty"] = -FLAGS.time_scale
 
     # Define exploration noise that is added to both subgoal actions and atomic actions.  Noise added is Gaussian N(0, noise_percentage * action_dim_range)    
