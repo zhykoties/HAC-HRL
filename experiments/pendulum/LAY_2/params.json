@@ -1,0 +1,6 @@
+{
+  "layers": 1,
+  "time_scale": 1000,
+  "max_actions": 1000,
+  "timesteps_per_action": 10
+}
