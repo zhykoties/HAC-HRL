@@ -70,7 +70,7 @@ def run_HAC(FLAGS, env, agent):
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:
             # Log performance
             success_rate = successful_episodes / num_test_episodes * 100
-            print("\nTesting Success Rate %.2f%%" % success_rate)
+            logger.info(f'Batch {batch} success rate {success_rate: .3f}')
             writer.add_scalar(f"{FLAGS.model}/success_rate", success_rate, batch)
             writer.flush()
             utils.save_checkpoint(agent, batch, success_rate, FLAGS.model_dir)
