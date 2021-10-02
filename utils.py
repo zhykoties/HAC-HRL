@@ -219,3 +219,35 @@ def load_checkpoint(agent, file_dir, restore_file):
 
     logger.info(f"Restored parameters have success rate: {filepath['success_rate']}")
     return filepath['episode']
+
+
+def load_checkpoint_lvl_parallel(agent, file_dir, restore_file):
+    """
+    Loads model parameters (state_dict) from file_path. If optimizer is provided, loads state_dict of
+    optimizer assuming it is present in file_dir.
+    Args:
+        restore_file: (string) filename which needs to be loaded
+        model: (torch.nn.Module) model for which the parameters are loaded
+        optimizer: (torch.optim) optional: resume optimizer from file_dir
+    """
+    filepath = os.path.join(file_dir, restore_file + '.pth.tar')
+    if not os.path.exists(file_dir):
+        raise FileNotFoundError(f"File doesn't exist {filepath}")
+    else:
+        logger.info(f'Restoring parameters from {filepath}')
+    if torch.cuda.is_available():
+        filepath = torch.load(filepath, map_location='cuda')
+    else:
+        filepath = torch.load(filepath, map_location='cpu')
+    num_layers = filepath['num_layers']
+    assert num_layers == agent.num_layers
+    for i in range(num_layers):
+        agent.layers[i].actor.load_state_dict(filepath[f'level_{i}']['actor'])
+        agent.layers[i].actor_optimizer.load_state_dict(filepath[f'level_{i}']['actor_optim'])
+        agent.layers[i].actor_target.load_state_dict(filepath[f'level_{i}']['actor_target'])
+        agent.layers[i].critic.load_state_dict(filepath[f'level_{i}']['critic'])
+        agent.layers[i].critic_optimizer.load_state_dict(filepath[f'level_{i}']['critic_optim'])
+        agent.layers[i].critic_target.load_state_dict(filepath[f'level_{i}']['critic_target'])
+
+    logger.info(f"Restored parameters have success rate: {filepath['success_rate']}")
+    return filepath['episode']

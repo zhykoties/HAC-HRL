@@ -105,7 +105,6 @@ class Agent:
 
     # Update actor and critic networks for each layer
     def learn(self):
-
         for i in range(len(self.layers)):
             self.layers[i].learn(self.num_updates)
 
@@ -132,12 +131,3 @@ class Agent:
 
         # Return whether end goal was achieved
         return goal_status[self.FLAGS.layers - 1]
-
-    # Save performance evaluations
-    def log_performance(self, success_rate):
-
-        # Add latest success_rate to list
-        self.performance_log.append(success_rate)
-
-        # Save log
-        cpickle.dump(self.performance_log, open("performance_log.p", "wb"))

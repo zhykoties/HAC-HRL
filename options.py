@@ -34,6 +34,10 @@ def parse_options():
                         default='LAY_3',
                         help='Model settings')
 
+    parser.add_argument('--exp_name',
+                        default=None,
+                        help='Name of experiment (optional)')
+
     parser.add_argument('--retrain',
                         action='store_true',
                         help='Include to reset policy')

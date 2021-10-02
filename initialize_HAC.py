@@ -16,7 +16,10 @@ model_json_path = os.path.join('experiments', FLAGS.env, FLAGS.model, 'params.js
 assert os.path.isfile(model_json_path), f'No model json config file found at {model_json_path}'
 params = utils.Params(model_json_path)
 params.update(params=FLAGS)
-params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model)
+if FLAGS.exp_name is not None:
+    params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model, FLAGS.exp_name)
+else:
+    params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model)
 utils.set_logger(os.path.join(params.model_dir, 'train.log'))
 
 # Instantiate the agent and Mujoco environment. The designer must assign values to the hyperparameters listed in the
