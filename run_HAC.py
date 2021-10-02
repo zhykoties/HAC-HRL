@@ -9,6 +9,7 @@ import logging
 import os
 import utils
 from tqdm import tqdm, trange
+from torch.utils.tensorboard import SummaryWriter
 
 NUM_BATCH = 1000
 TEST_FREQ = 2
@@ -30,10 +31,11 @@ def run_HAC(FLAGS, env, agent):
 
     if not os.path.exists(FLAGS.model_dir):
         os.makedirs(FLAGS.model_dir)
+    writer = SummaryWriter(log_dir=os.path.join('experiments', FLAGS.env))
     # If not retraining, restore weights
     # if we are not retraining from scratch, just restore weights
     if FLAGS.restore_file is not None:
-        start_batch = utils.load_checkpoint(agent, FLAGS.model_dir, FLAGS.restore_file)
+        start_batch = utils.load_checkpoint(agent, FLAGS.model_dir, FLAGS.restore_file) + 1
     else:
         start_batch = 0
 
@@ -69,7 +71,8 @@ def run_HAC(FLAGS, env, agent):
             # Log performance
             success_rate = successful_episodes / num_test_episodes * 100
             print("\nTesting Success Rate %.2f%%" % success_rate)
-            agent.log_performance(success_rate)
+            writer.add_scalar(f"{FLAGS.model}/success_rate", success_rate, batch)
+            writer.flush()
             utils.save_checkpoint(agent, batch, success_rate, FLAGS.model_dir)
             agent.FLAGS.test = False
 

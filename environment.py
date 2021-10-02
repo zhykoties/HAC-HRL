@@ -34,7 +34,8 @@ class Environment:
         self.project_state_to_end_goal = project_state_to_end_goal
         self.project_state_to_subgoal = project_state_to_subgoal
 
-        # Convert subgoal bounds to symmetric bounds and offset.  Need these to properly configure subgoal actor networks
+        # Convert subgoal bounds to symmetric bounds and offset.  Need these to properly configure subgoal actor
+        # networks
         self.subgoal_bounds_symmetric = np.zeros((len(self.subgoal_bounds)))
         self.subgoal_bounds_offset = np.zeros((len(self.subgoal_bounds)))
 
