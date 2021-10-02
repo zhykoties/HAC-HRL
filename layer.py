@@ -474,24 +474,31 @@ class Layer:
                 # Compute the target
                 rewards = rewards.unsqueeze(1)
                 is_terminals = is_terminals.unsqueeze(1)
-                expected_values = torch.clamp(rewards + (1.0 - is_terminals) * self.gamma * wanted_qs, min=0,
-                                              max=self.critic.q_limit)
+                expected_values = torch.clamp(rewards + (1.0 - is_terminals) * self.gamma * wanted_qs,
+                                              min=self.critic.q_limit, max=0)
 
                 # Update the critic network
                 self.critic_optimizer.zero_grad()
                 state_action_batch = self.critic(old_states, goals, actions)
+                print('critic predict: ')
+                print(state_action_batch)
+                print('true: ')
+                print(expected_values)
                 value_loss = F.mse_loss(state_action_batch, expected_values.detach())
                 value_loss.backward()
                 self.critic_optimizer.step()
 
                 # Update the actor network
                 self.actor_optimizer.zero_grad()
-                policy_loss = torch.mean(-self.critic(old_states, goals, self.actor(old_states, goals)))
+                critic_value = self.critic(old_states, goals, self.actor(old_states, goals))
+                print('critic_value: ')
+                print(critic_value)
+                policy_loss = torch.mean(-critic_value)
                 policy_loss.backward()
                 self.actor_optimizer.step()
 
                 # Update the target networks
-                self.actor_target.update_target_weights(self.actor)
-                self.critic_target.update_target_weights(self.critic)
+                # self.actor_target.update_target_weights(self.actor)
+                # self.critic_target.update_target_weights(self.critic)
 
                 return value_loss.item(), policy_loss.item()
