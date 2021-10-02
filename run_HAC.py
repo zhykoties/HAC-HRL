@@ -52,7 +52,6 @@ def run_HAC(FLAGS, env, agent):
             # Reset successful episode counter
             successful_episodes = 0
 
-        num_episodes = 5
         for episode in trange(num_episodes):
 
             # print(f'\nBatch {batch}, Episode {episode}')
