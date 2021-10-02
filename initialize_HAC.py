@@ -11,13 +11,13 @@ from run_HAC import run_HAC
 
 # Determine training options specified by user.  The full list of available options can be found in "options.py" file.
 FLAGS = parse_options()
-utils.set_logger('train.log')
 designer = importlib.import_module(f'experiments.{FLAGS.env}.design_agent_and_env')
 model_json_path = os.path.join('experiments', FLAGS.env, FLAGS.model, 'params.json')
 assert os.path.isfile(model_json_path), f'No model json config file found at {model_json_path}'
 params = utils.Params(model_json_path)
 params.update(params=FLAGS)
 params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model)
+utils.set_logger(os.path.join(params.model_dir, 'train.log'))
 
 # Instantiate the agent and Mujoco environment. The designer must assign values to the hyperparameters listed in the
 # "design_agent_and_env.py" file.

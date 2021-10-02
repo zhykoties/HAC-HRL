@@ -74,7 +74,7 @@ def set_logger(log_path):
     Args:
         log_path: (string) where to log
     """
-    _logger = logging.getLogger('TS')
+    _logger = logging.getLogger('HAC')
     _logger.setLevel(logging.INFO)
 
     fmt = logging.Formatter('[%(asctime)s] %(name)s: %(message)s', '%m/%d %H:%M:%S')
