@@ -250,7 +250,6 @@ class Layer:
 
                 # Update reward
                 trans_copy[index][2] = self.get_reward(new_goal, trans_copy[index][6], goal_thresholds)
-                print('goal replay reward: ', trans_copy[index][2])
 
                 # Update finished boolean based on reward
                 if trans_copy[index][2] == 0:
@@ -269,7 +268,7 @@ class Layer:
         self.temp_goal_replay_storage = []
 
     # Create transition penalizing subgoal if necessary.  The target Q-value when this transition is used will ignore
-    # next state as the finished boolena = True.  Change the finished boolean to False, if you would like the subgoal
+    # next state as the finished boolean = True.  Change the finished boolean to False, if you would like the subgoal
     # penalty to depend on the next state.
     def penalize_subgoal(self, subgoal, next_state, high_level_goal_achieved):
 
