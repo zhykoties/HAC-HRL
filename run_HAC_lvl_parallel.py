@@ -39,7 +39,7 @@ def run_HAC_lvl_parallel(FLAGS, env, agent):
 
         num_episodes = agent.other_params["num_exploration_episodes"]
 
-        utils.load_checkpoint_lvl_parallel(agent, FLAGS.model_dir, [last_batch, last_batch, batch])
+        utils.load_checkpoint_lvl_parallel(agent, FLAGS.base_model_dir, [last_batch, last_batch, batch])
         # Evaluate policy every TEST_FREQ batches if interleaving training and testing
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:
             print("\n--- TESTING ---")

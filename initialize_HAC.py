@@ -19,6 +19,7 @@ params = utils.Params(model_json_path)
 params.update(params=FLAGS)
 if FLAGS.exp_name is not None:
     params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model, FLAGS.exp_name)
+    params.base_model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model)
 else:
     params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model)
 if not os.path.exists(params.model_dir):
