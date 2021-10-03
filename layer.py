@@ -70,7 +70,6 @@ class Layer:
         self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=lr)
 
         # Parameter determines degree of noise added to actions during training
-        # self.noise_perc = noise_perc
         if self.layer_number == 0:
             self.noise_perc = agent_params["atomic_noise"]
         else:
@@ -131,19 +130,16 @@ class Layer:
             return self.actor(state_pt, goal_pt).data.cpu().numpy()[0], "Policy", subgoal_test
 
         else:
-
             if np.random.random_sample() > 0.2:
                 state_pt = torch.tensor(self.current_state, dtype=torch.float32, device=self.device).unsqueeze(0)
                 goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
                 # Choose noisy action
                 action = self.add_noise(self.actor(state_pt, goal_pt).data.cpu().numpy()[0], env)
-
                 action_type = "Noisy Policy"
 
             # Otherwise, choose random action
             else:
                 action = self.get_random_action(env)
-
                 action_type = "Random"
 
             # Determine whether to test upcoming subgoal
@@ -168,17 +164,14 @@ class Layer:
 
         # Transition will take the form [old state, hindsight_action, reward, next_state, goal, terminate boolean, None]
         transition = [self.current_state, hindsight_action, reward, next_state, self.goal, finished, None]
-        # print("AR Trans: ", transition)
-
-        # Add action replay transition to layer's replay buffer
         self.replay_buffer.add(np.copy(transition))
 
     # Create initial goal replay transitions
     def create_prelim_goal_replay_trans(self, hindsight_action, next_state, env, total_layers):
 
-        # Create transition evaluating hindsight action for some goal to be determined in future.  Goal will be
-        # ultimately be selected from states layer has traversed through.  Transition will be in the form [old state,
-        # hindsight action, reward = None, next state, goal = None, finished = None, next state projeted to
+        # Create transition evaluating hindsight action for some goal to be determined in future. Goal will be
+        # ultimately be selected from states layer has traversed through. Transition will be in the form [old state,
+        # hindsight action, reward = None, next state, goal = None, finished = None, next state projected to
         # subgoal/end goal space]
 
         if self.layer_number == total_layers - 1:
@@ -222,7 +215,7 @@ class Layer:
         num_trans = len(self.temp_goal_replay_storage)
 
         num_replay_goals = self.num_replay_goals
-        # If fewer transitions that ordinary number of replay goals, lower number of replay goals
+        # If fewer transitions than ordinary number of replay goals, lower number of replay goals
         if num_trans < self.num_replay_goals:
             num_replay_goals = num_trans
 
@@ -257,6 +250,7 @@ class Layer:
 
                 # Update reward
                 trans_copy[index][2] = self.get_reward(new_goal, trans_copy[index][6], goal_thresholds)
+                print('goal replay reward: ', trans_copy[index][2])
 
                 # Update finished boolean based on reward
                 if trans_copy[index][2] == 0:
