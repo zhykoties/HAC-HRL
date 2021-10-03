@@ -13,7 +13,7 @@ class ExperienceBuffer:
     def add(self, experience):
         assert len(experience) == 7, 'Experience must be of form (s, a, r, s, g, t, grip_info\')'
         assert type(experience[5]) == bool
-        self.experiences.push(experience)
+        self.experiences.append(experience)
 
     def get_batch(self):
         return [*zip(*(random.sample(self.experiences, self.batch_size)))]
