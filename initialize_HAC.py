@@ -8,6 +8,7 @@ import os
 from options import parse_options
 import utils
 from run_HAC import run_HAC
+from run_HAC_lvl_parallel import run_HAC_lvl_parallel
 
 # Determine training options specified by user.  The full list of available options can be found in "options.py" file.
 FLAGS = parse_options()
@@ -27,4 +28,7 @@ utils.set_logger(os.path.join(params.model_dir, 'train.log'))
 agent, env = designer.design_agent_and_env(params)
 
 # Begin training
-run_HAC(params, env, agent)
+if params.lvl_parallel:
+    run_HAC_lvl_parallel(params, env, agent)
+else:
+    run_HAC(params, env, agent)

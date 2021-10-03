@@ -19,7 +19,7 @@ num_test_episodes = 100
 logger = logging.getLogger(f'HAC.run_HAC')
 
 
-def run_HAC(FLAGS, env, agent):
+def run_HAC_lvl_parallel(FLAGS, env, agent):
     # Print task summary
     utils.print_summary(FLAGS, env)
     logger.info(FLAGS)
@@ -34,15 +34,12 @@ def run_HAC(FLAGS, env, agent):
     writer = SummaryWriter(log_dir=os.path.join('experiments', FLAGS.env))
     # If not retraining, restore weights
     # if we are not retraining from scratch, just restore weights
-    if FLAGS.restore_file is not None:
-        start_batch = utils.load_checkpoint(agent, FLAGS.model_dir, FLAGS.restore_file) + 1
-    else:
-        start_batch = 0
-
-    for batch in trange(start_batch, NUM_BATCH):
+    last_batch = NUM_BATCH // TEST_FREQ * TEST_FREQ - 1
+    for batch in trange(TEST_FREQ - 1, NUM_BATCH, TEST_FREQ):
 
         num_episodes = agent.other_params["num_exploration_episodes"]
 
+        utils.load_checkpoint_lvl_parallel(agent, FLAGS.model_dir, [last_batch, last_batch, batch])
         # Evaluate policy every TEST_FREQ batches if interleaving training and testing
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:
             print("\n--- TESTING ---")
@@ -68,7 +65,6 @@ def run_HAC(FLAGS, env, agent):
             logger.info(f'Batch {batch} success rate {success_rate: .3f}%')
             writer.add_scalar(f"{FLAGS.model}/success_rate", success_rate, batch)
             writer.flush()
-            utils.save_checkpoint(agent, batch, success_rate, FLAGS.model_dir)
             agent.FLAGS.test = False
 
             print("\n--- END TESTING ---\n")

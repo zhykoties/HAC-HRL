@@ -58,6 +58,10 @@ def parse_options():
                         action='store_true',
                         help='Print summary of each transition')
 
+    parser.add_argument('--lvl_parallel',
+                        action='store_true',
+                        help='Experiment: test each level using different checkpoints')
+
     parser.add_argument(
         '--restore-file',
         default=None,
