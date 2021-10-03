@@ -21,6 +21,8 @@ if FLAGS.exp_name is not None:
     params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model, FLAGS.exp_name)
 else:
     params.model_dir = os.path.join('experiments', FLAGS.env, FLAGS.model)
+if not os.path.exists(params.model_dir):
+    os.makedirs(params.model_dir)
 utils.set_logger(os.path.join(params.model_dir, 'train.log'))
 
 # Instantiate the agent and Mujoco environment. The designer must assign values to the hyperparameters listed in the

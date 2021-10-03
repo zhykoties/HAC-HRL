@@ -29,8 +29,6 @@ def run_HAC(FLAGS, env, agent):
     if not FLAGS.test and not FLAGS.train_only:
         mix_train_test = True
 
-    if not os.path.exists(FLAGS.model_dir):
-        os.makedirs(FLAGS.model_dir)
     writer = SummaryWriter(log_dir=os.path.join('experiments', FLAGS.env))
     # If not retraining, restore weights
     # if we are not retraining from scratch, just restore weights
