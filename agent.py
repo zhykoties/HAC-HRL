@@ -1,9 +1,6 @@
 import numpy as np
 from layer import Layer
 import torch
-import os
-import pickle as cpickle
-import utils
 
 
 # Below class instantiates an agent

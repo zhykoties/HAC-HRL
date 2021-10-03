@@ -8,7 +8,7 @@ in the "options.py" file.
 import logging
 import os
 import utils
-from tqdm import tqdm, trange
+from tqdm import trange
 from torch.utils.tensorboard import SummaryWriter
 
 NUM_BATCH = 1000

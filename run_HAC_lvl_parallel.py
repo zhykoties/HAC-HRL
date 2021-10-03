@@ -63,7 +63,7 @@ def run_HAC_lvl_parallel(FLAGS, env, agent):
             # Log performance
             success_rate = successful_episodes / num_test_episodes * 100
             logger.info(f'Batch {batch} success rate {success_rate: .3f}%')
-            writer.add_scalar(f"{FLAGS.model}/success_rate", success_rate, batch)
+            writer.add_scalar(f"{FLAGS.model}/{FLAGS.exp_name}/success_rate", success_rate, batch)
             writer.flush()
             agent.FLAGS.test = False
 

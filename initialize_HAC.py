@@ -31,7 +31,7 @@ utils.set_logger(os.path.join(params.model_dir, 'train.log'))
 agent, env = designer.design_agent_and_env(params)
 
 # Begin training
-if params.lvl_parallel:
+if FLAGS.lvl_parallel:
     run_HAC_lvl_parallel(params, env, agent)
 else:
     run_HAC(params, env, agent)

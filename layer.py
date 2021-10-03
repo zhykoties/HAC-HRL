@@ -468,6 +468,8 @@ class Layer:
 
                 # Get the actions and the state values to compute the targets
                 new_actions = self.actor(new_states, goals)
+                # we turn off the target networks here as in the official implementation as it is observed
+                # to achieve better results without target networks!
                 # new_actions = self.actor_target(new_states, goals)
                 wanted_qs = self.critic(new_states, goals, new_actions.detach())
                 # wanted_qs = self.critic_target(new_states, goals, new_actions.detach())

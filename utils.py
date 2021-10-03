@@ -250,4 +250,4 @@ def load_checkpoint_lvl_parallel(agent, file_dir, levels_batch):
         agent.layers[i].critic_optimizer.load_state_dict(filepath[f'level_{i}']['critic_optim'])
         agent.layers[i].critic_target.load_state_dict(filepath[f'level_{i}']['critic_target'])
 
-        logger.info(f"Restored parameters have success rate: {filepath['success_rate']}")
+        logger.info(f"Layer {i} restored parameters have success rate: {filepath['success_rate']}")
