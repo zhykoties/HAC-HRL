@@ -325,6 +325,8 @@ class Layer:
         # Current layer has self.time_limit attempts to each its goal state.
         attempts_made = 0
 
+        print(f'layer {self.layer_number} subgoal test: {subgoal_test}')
+
         while True:
 
             # Select action to achieve goal state using epsilon-greedy policy or greedy policy if in test mode
