@@ -426,8 +426,8 @@ class Layer:
 
             # Return to previous level to receive next subgoal if applicable
             # if self.return_to_higher_level(max_lay_achieved, agent, env, attempts_made):
-            if (
-                    max_lay_achieved is not None and max_lay_achieved >= self.layer_number) or agent.steps_taken >= env.max_actions or attempts_made >= self.time_limit:
+            if (max_lay_achieved is not None and max_lay_achieved >= self.layer_number) or \
+                    agent.steps_taken >= env.max_actions or attempts_made >= self.time_limit:
 
                 # if self.layer_number == agent.FLAGS.layers - 1:
                 #    print("HL Attempts Made: ", attempts_made)
@@ -437,7 +437,8 @@ class Layer:
                     self.maxed_out = True
                     # print("Layer %d Out of Attempts" % self.layer_number)
 
-                # If not testing, finish goal replay by filling in missing goal and reward values before returning to prior level.
+                # If not testing, finish goal replay by filling in missing goal & reward values before returning to
+                # prior level.
                 if not agent.FLAGS.test:
                     if self.layer_number == agent.FLAGS.layers - 1:
                         goal_thresholds = env.end_goal_thresholds
