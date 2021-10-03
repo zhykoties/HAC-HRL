@@ -1,6 +1,6 @@
 {
   "layers": 3,
-  "time_scale": 20,
-  "max_actions": 8000,
+  "time_scale": 14,
+  "max_actions": 2744,
   "timesteps_per_action": 10
 }
