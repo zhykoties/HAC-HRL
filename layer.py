@@ -357,7 +357,7 @@ class Layer:
                                                                                               episode_num,
                                                                                               record_exp=record_exp)
                     count = 0
-                    penalize_subgoal = not goal_status[self.layer_number]
+                    penalize_subgoal = not goal_status[self.layer_number - 1]
                     state_end_copy = env.sim.get_state()
                     agent_end_steps_taken = agent.steps_taken
                     agent_end_current_state = agent.current_state
@@ -369,7 +369,7 @@ class Layer:
                         goal_temp, _ = agent.layers[self.layer_number - 1].train(agent, env, next_subgoal_test,
                                                                                  episode_num, record_exp=False,
                                                                                  without_noise=False)
-                        penalize_subgoal = not goal_temp[self.layer_number]
+                        penalize_subgoal = not goal_temp[self.layer_number - 1]
 
                     env.sim.set_state(state_end_copy)
                     agent.steps_taken = agent_end_steps_taken
@@ -475,8 +475,6 @@ class Layer:
                 # If not testing, finish goal replay by filling in missing goal & reward values before returning to
                 # prior level.
                 if not agent.FLAGS.test and record_exp:
-                    print('record_exp: ', record_exp)
-                    print('not agent.FLAGS.test: ', agent.FLAGS.test)
                     if self.layer_number == agent.FLAGS.layers - 1:
                         goal_thresholds = env.end_goal_thresholds
                     else:
