@@ -361,7 +361,8 @@ class Layer:
                     state_end_copy = env.sim.get_state()
                     agent_end_steps_taken = agent.steps_taken
                     agent_end_current_state = agent.current_state
-                    while not penalize_subgoal and count < self.FLAGS.max_subgoal_explore:
+                    penalize_diff = penalize_subgoal
+                    while penalize_subgoal and count < self.FLAGS.max_subgoal_explore:
                         env.sim.set_state(state_copy)
                         agent.steps_taken = agent_steps_taken
                         agent.current_state = agent_current_state
@@ -369,6 +370,8 @@ class Layer:
                                                                                  episode_num, record_exp=False,
                                                                                  without_noise=False)
                         penalize_subgoal = not goal_temp[self.layer_number]
+                    if penalize_diff != penalize_subgoal:
+                        print('penalize reset success!')
                     env.sim.set_state(state_end_copy)
                     agent.steps_taken = agent_end_steps_taken
                     agent.current_state = agent_end_current_state
