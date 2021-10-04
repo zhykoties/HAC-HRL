@@ -73,9 +73,9 @@ def run_HAC(FLAGS, env, agent):
                 logger.info(f'Level {i} penalize rate: {penalize_rate}')
                 logger.info(f'Level {i} total subgoal tests: {agent.total_subgoal_test[i]}')
                 logger.info(f'Level {i} total transitions: {agent.total_transitions[i]}')
-                writer.add_scalar(f"{FLAGS.model}/lv_{i}_penalize_rate", penalize_rate, batch)
-                writer.add_scalar(f"{FLAGS.model}/lv_{i}_num_subgoal_tests", agent.total_subgoal_test[i], batch)
-                writer.add_scalar(f"{FLAGS.model}/lv_{i}_num_transitions", agent.total_transitions[i], batch)
+                writer.add_scalar(f"{FLAGS.model}/{FLAGS.exp_name}/lv_{i}_penalize_rate", penalize_rate, batch)
+                writer.add_scalar(f"{FLAGS.model}/{FLAGS.exp_name}/lv_{i}_num_subgoal_tests", agent.total_subgoal_test[i], batch)
+                writer.add_scalar(f"{FLAGS.model}/{FLAGS.exp_name}/lv_{i}_num_transitions", agent.total_transitions[i], batch)
             writer.flush()
 
         # Finish evaluating policy if tested prior batch
@@ -83,7 +83,7 @@ def run_HAC(FLAGS, env, agent):
             # Log performance
             success_rate = successful_episodes / num_test_episodes * 100
             logger.info(f'Batch {batch} success rate {success_rate: .3f}%')
-            writer.add_scalar(f"{FLAGS.model}/success_rate", success_rate, batch)
+            writer.add_scalar(f"{FLAGS.model}/{FLAGS.exp_name}/success_rate", success_rate, batch)
             writer.flush()
             utils.save_checkpoint(agent, batch, success_rate, FLAGS.model_dir)
             agent.FLAGS.test = False
