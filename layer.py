@@ -363,6 +363,7 @@ class Layer:
                     agent_end_current_state = agent.current_state
                     penalize_diff = penalize_subgoal
                     while penalize_subgoal and count < self.FLAGS.max_subgoal_explore:
+                        count += 1
                         env.sim.set_state(state_copy)
                         agent.steps_taken = agent_steps_taken
                         agent.current_state = agent_current_state
