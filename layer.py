@@ -355,6 +355,7 @@ class Layer:
                 agent.goal_array[self.layer_number - 1] = action
 
                 if next_subgoal_test:
+                    print('enter subgoal test for layer: ', self.layer_number)
                     state_copy = env.sim.get_state()
                     agent_steps_taken = agent.steps_taken
                     agent_current_state = agent.current_state
@@ -368,6 +369,7 @@ class Layer:
                     agent_end_steps_taken = agent.steps_taken
                     agent_end_current_state = agent.current_state
                     while penalize_subgoal and count < self.FLAGS.max_subgoal_explore:
+                        print('additional subgoal explore test')
                         count += 1
                         env.sim.set_state(state_copy)
                         agent.steps_taken = agent_steps_taken
