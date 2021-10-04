@@ -310,14 +310,6 @@ class Layer:
     # Learn to achieve goals with actions belonging to appropriate time scale.  "goal_array" contains the goal states
     # for the current layer and all higher layers
     def train(self, agent, env, subgoal_test=False, episode_num=None, record_exp=True, without_noise=True):
-    
-        print('layer number: ', self.layer_number)
-        print('subgoal_test: ', subgoal_test)
-        print('without_noise: ', without_noise)
-        print('record_exp: ', record_exp)
-
-
-        # print("\nTraining Layer %d" % self.layer_number)
 
         # Set layer's current state and new goal state
         self.goal = agent.goal_array[self.layer_number]
@@ -355,7 +347,6 @@ class Layer:
                 agent.goal_array[self.layer_number - 1] = action
 
                 if next_subgoal_test:
-                    print('enter subgoal test for layer: ', self.layer_number)
                     state_copy = env.sim.get_state()
                     agent_steps_taken = agent.steps_taken
                     agent_current_state = agent.current_state
@@ -369,7 +360,6 @@ class Layer:
                     agent_end_steps_taken = agent.steps_taken
                     agent_end_current_state = agent.current_state
                     while penalize_subgoal and count < self.FLAGS.max_subgoal_explore:
-                        print('additional subgoal explore test')
                         count += 1
                         env.sim.set_state(state_copy)
                         agent.steps_taken = agent_steps_taken
