@@ -38,7 +38,10 @@ def run_HAC(FLAGS, env, agent):
         start_batch = 0
 
     for batch in trange(start_batch, NUM_BATCH):
-
+        
+        agent.penalize_subgoal_count = [0 for _ in range(FLAGS.layers)]
+        agent.total_subgoal_test = [0 for _ in range(FLAGS.layers)]
+        agent.total_transitions = [0 for _ in range(FLAGS.layers)]
         num_episodes = agent.other_params["num_exploration_episodes"]
 
         # Evaluate policy every TEST_FREQ batches if interleaving training and testing
@@ -63,6 +66,10 @@ def run_HAC(FLAGS, env, agent):
                 # Increment successful episode counter if applicable
                 if mix_train_test and (batch + 1) % TEST_FREQ == 0:
                     successful_episodes += 1
+
+        for i in range(FLAGS.layers):
+            logger.info(f'Level {i} penalize rate: {agent.penalize_subgoal_count[i] / agent.total_subgoal_test[i]}')
+            logger.info(f'Level {i} total transitions: {agent.total_transitions[i]}')
 
         # Finish evaluating policy if tested prior batch
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:

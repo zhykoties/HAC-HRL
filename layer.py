@@ -361,7 +361,6 @@ class Layer:
                     state_end_copy = env.sim.get_state()
                     agent_end_steps_taken = agent.steps_taken
                     agent_end_current_state = agent.current_state
-                    penalize_diff = penalize_subgoal
                     while penalize_subgoal and count < self.FLAGS.max_subgoal_explore:
                         count += 1
                         env.sim.set_state(state_copy)
@@ -371,10 +370,7 @@ class Layer:
                                                                                  episode_num, record_exp=False,
                                                                                  without_noise=False)
                         penalize_subgoal = not goal_temp[self.layer_number]
-                    if penalize_diff != penalize_subgoal:
-                        print(f'layer {self.layer_number} penalize reset success!')
-                        print('goal_temp: ', goal_temp)
-                        print('goal status: ', goal_status)
+
                     env.sim.set_state(state_end_copy)
                     agent.steps_taken = agent_end_steps_taken
                     agent.current_state = agent_end_current_state
@@ -428,6 +424,7 @@ class Layer:
 
             # Next, create hindsight transitions if not testing
             if not agent.FLAGS.test and record_exp:
+                agent.total_transitions[self.layer_number] += 1
                 # Create action replay transition by evaluating hindsight action given current goal
                 self.perform_action_replay(hindsight_action, agent.current_state, goal_status)
 
@@ -437,10 +434,11 @@ class Layer:
 
                 # Penalize subgoals if subgoal testing and subgoal was missed by lower layers after maximum number of
                 # attempts
-                if self.layer_number > 0 and next_subgoal_test and \
-                        agent.layers[self.layer_number - 1].maxed_out and penalize_subgoal:
-                    self.penalize_subgoal(action, agent.current_state, goal_status[self.layer_number])
-
+                if self.layer_number > 0 and next_subgoal_test:
+                    agent.total_subgoal_test[self.layer_number] += 1
+                    if agent.layers[self.layer_number - 1].maxed_out and penalize_subgoal:
+                        self.penalize_subgoal(action, agent.current_state, goal_status[self.layer_number])
+                        agent.penalize_subgoal_count[self.layer_number] += 1
             # Print summary of transition
             if agent.FLAGS.verbose:
 
