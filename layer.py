@@ -372,7 +372,7 @@ class Layer:
                                                                                  without_noise=False)
                         penalize_subgoal = not goal_temp[self.layer_number]
                     if penalize_diff != penalize_subgoal:
-                        print('penalize reset success!')
+                        print(f'layer {self.layer_number} penalize reset success!')
                         print('goal_temp: ', goal_temp)
                         print('goal status: ', goal_status)
                     env.sim.set_state(state_end_copy)
