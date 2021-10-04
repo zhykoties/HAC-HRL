@@ -310,6 +310,12 @@ class Layer:
     # Learn to achieve goals with actions belonging to appropriate time scale.  "goal_array" contains the goal states
     # for the current layer and all higher layers
     def train(self, agent, env, subgoal_test=False, episode_num=None, record_exp=True, without_noise=True):
+    
+        print('layer number: ', self.layer_number)
+        print('subgoal_test: ', subgoal_test)
+        print('without_noise: ', without_noise)
+        print('record_exp: ', record_exp)
+
 
         # print("\nTraining Layer %d" % self.layer_number)
 
