@@ -64,6 +64,7 @@ def parse_options():
 
     parser.add_argument('--max_subgoal_explore',
                         default=0,
+                        type=int,
                         help='Name of experiment (optional)')
 
     parser.add_argument(
