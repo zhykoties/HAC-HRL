@@ -13,7 +13,7 @@ class Layer:
         self.layer_number = layer_number
         self.FLAGS = FLAGS
         if 'max_subgoal_explore' not in FLAGS:
-            self.FLAGS.max_subgoal_explore = 1
+            self.FLAGS.max_subgoal_explore = 0
         self.device = device
 
         # Set time limit for each layer.  If agent uses only 1 layer, time limit is the max number of low-level
@@ -330,8 +330,6 @@ class Layer:
         attempts_made = 0
         penalize_subgoal = True
 
-        print(f'layer {self.layer_number} subgoal test: {subgoal_test}')
-
         while True:
 
             # Select action to achieve goal state using epsilon-greedy policy or greedy policy if in test mode
@@ -424,8 +422,6 @@ class Layer:
 
             # Next, create hindsight transitions if not testing
             if not agent.FLAGS.test and record_exp:
-                print('agent.FLAGS.test: ', agent.FLAGS.test)
-                print('record_exp: ', record_exp)
                 # Create action replay transition by evaluating hindsight action given current goal
                 self.perform_action_replay(hindsight_action, agent.current_state, goal_status)
 

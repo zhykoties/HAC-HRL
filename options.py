@@ -63,7 +63,7 @@ def parse_options():
                         help='Experiment: test each level using different checkpoints')
 
     parser.add_argument('--max_subgoal_explore',
-                        default=1,
+                        default=0,
                         help='Name of experiment (optional)')
 
     parser.add_argument(
