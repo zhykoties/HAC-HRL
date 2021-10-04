@@ -12,6 +12,9 @@ class Layer:
     def __init__(self, layer_number, FLAGS, env, agent_params, device):
         self.layer_number = layer_number
         self.FLAGS = FLAGS
+        if 'max_subgoal_explore' not in FLAGS:
+            print("HERRRE")
+            self.FLAGS.max_subgoal_explore = 1
         self.device = device
 
         # Set time limit for each layer.  If agent uses only 1 layer, time limit is the max number of low-level
@@ -121,16 +124,16 @@ class Layer:
         return action
 
     # Function selects action using an epsilon-greedy policy
-    def choose_action(self, agent, env, subgoal_test):
+    def choose_action(self, agent, env, subgoal_test, without_noise=True):
 
         # If testing mode or testing subgoals, action is output of actor network without noise
-        if agent.FLAGS.test or subgoal_test:
+        if agent.FLAGS.test or (subgoal_test and without_noise):
             state_pt = torch.tensor(self.current_state, dtype=torch.float32, device=self.device).unsqueeze(0)
             goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
             return self.actor(state_pt, goal_pt).data.cpu().numpy()[0], "Policy", subgoal_test
 
         else:
-            if np.random.random_sample() > 0.2:
+            if np.random.random_sample() > 0.2 or (subgoal_test and not without_noise):
                 state_pt = torch.tensor(self.current_state, dtype=torch.float32, device=self.device).unsqueeze(0)
                 goal_pt = torch.tensor(self.goal, dtype=torch.float32, device=self.device).unsqueeze(0)
                 # Choose noisy action
@@ -143,7 +146,9 @@ class Layer:
                 action_type = "Random"
 
             # Determine whether to test upcoming subgoal
-            if np.random.random_sample() < agent.subgoal_test_perc:
+            if subgoal_test and not without_noise:
+                next_subgoal_test = subgoal_test
+            elif np.random.random_sample() < agent.subgoal_test_perc:
                 next_subgoal_test = True
             else:
                 next_subgoal_test = False
@@ -305,7 +310,7 @@ class Layer:
 
     # Learn to achieve goals with actions belonging to appropriate time scale.  "goal_array" contains the goal states
     # for the current layer and all higher layers
-    def train(self, agent, env, subgoal_test=False, episode_num=None):
+    def train(self, agent, env, subgoal_test=False, episode_num=None, record_exp=True, without_noise=True):
 
         # print("\nTraining Layer %d" % self.layer_number)
 
@@ -324,13 +329,14 @@ class Layer:
 
         # Current layer has self.time_limit attempts to each its goal state.
         attempts_made = 0
+        penalize_subgoal = True
 
         print(f'layer {self.layer_number} subgoal test: {subgoal_test}')
 
         while True:
 
             # Select action to achieve goal state using epsilon-greedy policy or greedy policy if in test mode
-            action, action_type, next_subgoal_test = self.choose_action(agent, env, subgoal_test)
+            action, action_type, next_subgoal_test = self.choose_action(agent, env, subgoal_test, without_noise)
 
             """
             if self.layer_number == agent.FLAGS.layers - 1:
@@ -345,8 +351,34 @@ class Layer:
 
                 agent.goal_array[self.layer_number - 1] = action
 
-                goal_status, max_lay_achieved = agent.layers[self.layer_number - 1].train(agent, env, next_subgoal_test,
-                                                                                          episode_num)
+                if next_subgoal_test:
+                    state_copy = env.sim.get_state()
+                    agent_steps_taken = agent.steps_taken
+                    agent_current_state = agent.current_state
+                    goal_status, max_lay_achieved = agent.layers[self.layer_number - 1].train(agent, env,
+                                                                                              next_subgoal_test,
+                                                                                              episode_num,
+                                                                                              record_exp=record_exp)
+                    count = 0
+                    penalize_subgoal = not goal_status[self.layer_number]
+                    state_end_copy = env.sim.get_state()
+                    agent_end_steps_taken = agent.steps_taken
+                    agent_end_current_state = agent.current_state
+                    while not penalize_subgoal and count < self.FLAGS.max_subgoal_explore:
+                        env.sim.set_state(state_copy)
+                        agent.steps_taken = agent_steps_taken
+                        agent.current_state = agent_current_state
+                        goal_temp, _ = agent.layers[self.layer_number - 1].train(agent, env, next_subgoal_test,
+                                                                                 episode_num, record_exp=False,
+                                                                                 without_noise=False)
+                        penalize_subgoal = not goal_temp[self.layer_number]
+                    env.sim.set_state(state_end_copy)
+                    agent.steps_taken = agent_end_steps_taken
+                    agent.current_state = agent_end_current_state
+                else:
+                    goal_status, max_lay_achieved = agent.layers[self.layer_number - 1].train(agent, env,
+                                                                                              next_subgoal_test,
+                                                                                              episode_num)
 
             # If layer is bottom level, execute low-level action
             else:
@@ -392,8 +424,9 @@ class Layer:
                     hindsight_action = env.project_state_to_subgoal(env.sim, agent.current_state)
 
             # Next, create hindsight transitions if not testing
-            if not agent.FLAGS.test:
-
+            if not agent.FLAGS.test and record_exp:
+                print('agent.FLAGS.test: ', agent.FLAGS.test)
+                print('record_exp: ', record_exp)
                 # Create action replay transition by evaluating hindsight action given current goal
                 self.perform_action_replay(hindsight_action, agent.current_state, goal_status)
 
@@ -403,7 +436,8 @@ class Layer:
 
                 # Penalize subgoals if subgoal testing and subgoal was missed by lower layers after maximum number of
                 # attempts
-                if self.layer_number > 0 and next_subgoal_test and agent.layers[self.layer_number - 1].maxed_out:
+                if self.layer_number > 0 and next_subgoal_test and \
+                        agent.layers[self.layer_number - 1].maxed_out and penalize_subgoal:
                     self.penalize_subgoal(action, agent.current_state, goal_status[self.layer_number])
 
             # Print summary of transition
