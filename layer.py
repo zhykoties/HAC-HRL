@@ -13,7 +13,6 @@ class Layer:
         self.layer_number = layer_number
         self.FLAGS = FLAGS
         if 'max_subgoal_explore' not in FLAGS:
-            print("HERRRE")
             self.FLAGS.max_subgoal_explore = 1
         self.device = device
 

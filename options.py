@@ -62,6 +62,10 @@ def parse_options():
                         action='store_true',
                         help='Experiment: test each level using different checkpoints')
 
+    parser.add_argument('--max_subgoal_explore',
+                        default=1,
+                        help='Name of experiment (optional)')
+
     parser.add_argument(
         '--restore-file',
         default=None,
