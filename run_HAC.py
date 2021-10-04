@@ -71,6 +71,7 @@ def run_HAC(FLAGS, env, agent):
             for i in range(FLAGS.layers):
                 penalize_rate = 0 if agent.total_subgoal_test[i] == 0 else agent.penalize_subgoal_count[i] / agent.total_subgoal_test[i]
                 logger.info(f'Level {i} penalize rate: {penalize_rate}')
+                logger.info(f'Level {i} total subgoal tests: {agent.total_subgoal_test[i]}')
                 logger.info(f'Level {i} total transitions: {agent.total_transitions[i]}')
 
         # Finish evaluating policy if tested prior batch
