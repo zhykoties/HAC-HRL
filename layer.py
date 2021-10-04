@@ -473,7 +473,7 @@ class Layer:
 
                 # If not testing, finish goal replay by filling in missing goal & reward values before returning to
                 # prior level.
-                if not agent.FLAGS.test:
+                if not agent.FLAGS.test and record_exp:
                     if self.layer_number == agent.FLAGS.layers - 1:
                         goal_thresholds = env.end_goal_thresholds
                     else:
