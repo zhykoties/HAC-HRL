@@ -67,9 +67,10 @@ def run_HAC(FLAGS, env, agent):
                 if mix_train_test and (batch + 1) % TEST_FREQ == 0:
                     successful_episodes += 1
 
-        for i in range(FLAGS.layers):
-            logger.info(f'Level {i} penalize rate: {agent.penalize_subgoal_count[i] / agent.total_subgoal_test[i]}')
-            logger.info(f'Level {i} total transitions: {agent.total_transitions[i]}')
+        if not agent.FLAGS.test:
+            for i in range(FLAGS.layers):
+                logger.info(f'Level {i} penalize rate: {agent.penalize_subgoal_count[i] / agent.total_subgoal_test[i]}')
+                logger.info(f'Level {i} total transitions: {agent.total_transitions[i]}')
 
         # Finish evaluating policy if tested prior batch
         if mix_train_test and (batch + 1) % TEST_FREQ == 0:
